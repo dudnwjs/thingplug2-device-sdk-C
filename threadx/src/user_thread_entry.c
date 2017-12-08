@@ -91,6 +91,8 @@ void user_thread_entry(void)
             nx_ip_status_check( &g_ip0, NX_IP_LINK_ENABLED, (ULONG *) &status, 10);
             tx_thread_sleep(500);
         }
+        nx_dhcp_stop (&g_dhcp_client0);
+        nx_dhcp_reinitialize (&g_dhcp_client0);
         dhcp_start();
         g_sf_comms0.p_api->write(g_sf_comms0.p_ctrl, str, sizeof(str), TX_NO_WAIT);
  
