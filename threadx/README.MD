@@ -156,4 +156,4 @@ ThingPlug_Simple_SDK 실행
 ---
 2. Thingplug SensorData
 ---
-![ThreadXTP.png](../images/ThreadXTP.png)
+![threadxTP.png](../images/threadxTP.png)
