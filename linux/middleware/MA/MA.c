@@ -572,7 +572,7 @@ void start() {
 
     char* subscribeTopics[] = { mTopicControlDown };
 
-#if(MQTT_ENABLE_SERVER_CERT_AUTH)
+#if(1)
 	char host[] = MQTT_SECURE_HOST;
 	int port = MQTT_SECURE_PORT;
 #else
