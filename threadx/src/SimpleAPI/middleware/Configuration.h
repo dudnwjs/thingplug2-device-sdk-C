@@ -20,7 +20,7 @@
 #define JSON_TELEMETRY
 //#define CSV_TELEMETRY
 
-#define LOGIN_NAME                          "(TBD)"
+#define SIMPLE_DEVICE_TOKEN                 "(TBD)"
 
 #define SIMPLE_SERVICE_NAME                 "(TBD)"
 #define SIMPLE_DEVICE_NAME                  "(TBD)"
