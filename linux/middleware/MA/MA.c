@@ -459,13 +459,13 @@ static void attribute() {
     item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
     item->name = "sysLocationLatitude";    
-    item->value = "35.1689766";
+    item->value = "37.380257"; 
     arrayElement->total++;
 
     item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
     item->name = "sysLocationLongitude";
-    item->value = "129.1338524";
+    item->value = "127.115479";
     arrayElement->total++;
 
     item = arrayElement->element + arrayElement->total;
