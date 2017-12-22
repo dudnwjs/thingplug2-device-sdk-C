@@ -395,3 +395,25 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format) {
     if(jsonData) free(jsonData);
     return rc;
 }
+
+/**
+ * @brief send all raw data to result
+ * @param[in] result : control result 
+ * @return int : result code
+ */
+int tpSimpleRawResult2(char* result) {
+    if(!result) return TP_SDK_INVALID_PARAMETER;
+    int rc = TP_SDK_FAILURE;
+    char topic[SIZE_TOPIC] = "";
+    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+
+    {
+        char str[128];
+        snprintf(str,128,"tpSimpleRawResult2\r\ntopic : %s", topic);
+        SKTDebugPrint(LOG_LEVEL_INFO, str);
+        SKTDebugPrint(LOG_LEVEL_INFO, result);
+    }
+    rc = handleMQTTPublishMessageWithTopic(topic, result);
+    return rc;
+}
+
