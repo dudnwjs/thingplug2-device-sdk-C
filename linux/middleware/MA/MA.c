@@ -152,9 +152,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO SOFTWARE REINSTALL
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_REINSTALL");
             
-        } else if(strncmp(method, RPC_SOFTWARE_UNINSTALL, strlen(RPC_SOFTWARE_UNINSTALL)) == 0) {
-            // TODO SOFTWARE UNINSTALL
-            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_UNINSTALL");
+        } else if(strncmp(method, RPC_SOFTWARE_REUNINSTALL, strlen(RPC_SOFTWARE_REUNINSTALL)) == 0) {
+            // TODO SOFTWARE REUNINSTALL
+            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_REUNINSTALL");
             
         } else if(strncmp(method, RPC_SOFTWARE_UPDATE, strlen(RPC_SOFTWARE_UPDATE)) == 0) {
             // TODO SOFTWARE UPDATE
@@ -163,7 +163,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         } else if(strncmp(method, RPC_FIRMWARE_UPGRADE, strlen(RPC_FIRMWARE_UPGRADE)) == 0) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
-            
+
         } else if(strncmp(method, RPC_CLOCK_SYNC, strlen(RPC_CLOCK_SYNC)) == 0) {
             // TODO CLOCK SYNC
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_CLOCK_SYNC");
@@ -234,7 +234,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         int cmdId = cmdIdObject->valueint;
         if(!cmd) return;
         // if attribute control
-        if(strncmp(cmd, "set_attr", strlen("set_attr")) == 0) {
+        if(strncmp(cmd, "setAttribute", strlen("setAttribute")) == 0) {
             cJSON* attribute = cJSON_GetObjectItemCaseSensitive(root, "attribute");
             if(!attribute) return;
             cJSON* act7colorLedObject = cJSON_GetObjectItemCaseSensitive(attribute, "act7colorLed");
@@ -274,9 +274,7 @@ char *sensor_list[] = { "temp1", "humi1", "light1" };
 
 static void telemetry() {
     mStep = PROCESS_TELEMETRY;
-    // TODO make data
-    // int i;
-#ifdef JSON_TELEMETRY
+#ifdef JSON_FORMAT
     char *temp, *humi, *light;
     int len;
     ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));
@@ -323,7 +321,7 @@ static void telemetry() {
     free(humi);
     free(light);
 #endif
-#ifdef CSV_TELEMETRY
+#ifdef CSV_FORMAT
     char *temp, *humi, *light,time[16];
     int len,total_len;
 
@@ -397,7 +395,7 @@ static int getNetworkInfo(NetworkInfo* info, char* interface) {
 
 static void attribute() {
 
-#ifdef JSON_TELEMETRY
+#ifdef JSON_FORMAT
     ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));
     
     arrayElement->capacity = 15;
@@ -459,13 +457,13 @@ static void attribute() {
     item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
     item->name = "sysLocationLatitude";    
-    item->value = "37.380257"; 
+    item->value = "35.1689766";
     arrayElement->total++;
 
     item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
     item->name = "sysLocationLongitude";
-    item->value = "127.115479";
+    item->value = "129.1338524";
     arrayElement->total++;
 
     item = arrayElement->element + arrayElement->total;
@@ -481,7 +479,7 @@ static void attribute() {
 
     mStep = PROCESS_TELEMETRY;
 #endif
-#ifdef CSV_TELEMETRY
+#ifdef CSV_FORMAT
     char csv_attr[256] = "";
     unsigned long availableMemory = getAvailableMemory();
     char tmp[64];
@@ -508,9 +506,9 @@ static void attribute() {
     //ServerIPAddr
     SRAConvertCSVData( csv_attr, MQTT_HOST); 
     //Latitude
-    SRAConvertCSVData( csv_attr, "37.380257"); 
+    SRAConvertCSVData( csv_attr, "35.1689766"); 
     //Longitude
-    SRAConvertCSVData( csv_attr, "127.115479"); 
+    SRAConvertCSVData( csv_attr, "129.1338524"); 
     //Led
     int act7colorLed = 0;
     snprintf( tmp, 64, "%d", act7colorLed );
@@ -593,7 +591,7 @@ int MARun() {
 		if(tpMQTTIsConnected() && mStep == PROCESS_TELEMETRY) {
             telemetry();
         } 
-        // reconnect when disconnected
+        // reconnect when disconnected 
         else if(mConnectionStatus == DISCONNECTED) {
             tpSDKDestroy();
             start();

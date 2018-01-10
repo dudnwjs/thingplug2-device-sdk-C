@@ -118,5 +118,5 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format);
 
 int tpSimpleRawAttribute(char* attribute, DATA_FORMAT format);
 
-int tpSimpleRawResult(RPCResponse* response);
+int tpSimpleRawResult(char* result);
 #endif
