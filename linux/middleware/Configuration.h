@@ -18,7 +18,7 @@
 #define MQTT_ENABLE_SERVER_CERT_AUTH        0
 
 #define JSON_FORMAT
-// #define CSV_FORMAT
+//#define CSV_FORMAT
 #define SIMPLE_DEVICE_TOKEN                 "(TBD)" // device token(Check with ThingPlug Portal)
 #define SIMPLE_SERVICE_NAME                 "(TBD)" // service name(Check with ThingPlug Portal)
 #define SIMPLE_DEVICE_NAME                  "(TBD)" // device name(Check with ThingPlug Portal)
