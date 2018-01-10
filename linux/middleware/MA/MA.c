@@ -62,11 +62,11 @@ typedef struct
 } NetworkInfo;
 
 static char mTopicControlDown[SIZE_TOPIC] = "";
-// static char mTopicSubscribeRes[SIZE_TOPIC] = "";
 static char mClientID[SIZE_CLIENT_ID] = "";
 
 static void attribute();
 static void telemetry();
+static char* make_response(RPCResponse *rsp);
 
 void MQTTConnected(int result) {
     SKTDebugPrint(LOG_LEVEL_INFO, "MQTTConnected result : %d", result);
@@ -197,7 +197,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             snprintf(body, sizeof(body), "{\"%s\":%d}", controlObject->string, control);
             rsp.resultBody = body;
             rsp.result = "success";
-            tpSimpleRawResult(&rsp);
+            char* rpcRsp = make_response(&rsp);
+            tpSimpleRawResult(rpcRsp);
+            free(rpcRsp);
         }
         // control fail
         else {
@@ -517,6 +519,31 @@ static void attribute() {
     
     mStep = PROCESS_TELEMETRY;
 #endif
+}
+
+static char* make_response(RPCResponse *rsp) {
+    char* jsonData;
+    cJSON* jsonObject = cJSON_CreateObject();
+    cJSON* rpcRspObject = cJSON_CreateObject();
+    cJSON* resultObject;
+
+    cJSON_AddStringToObject(jsonObject, CMD, rsp->cmd);
+    cJSON_AddNumberToObject(jsonObject, CMD_ID, rsp->cmdId);
+    cJSON_AddStringToObject(jsonObject, RESULT, rsp->result);
+
+    cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
+    cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
+    cJSON_AddStringToObject(rpcRspObject, METHOD, rsp->method);
+    resultObject = cJSON_CreateRaw(rsp->resultBody);
+    if(rsp->fail) {
+        cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
+    } else {
+        cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
+    }
+    cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
+    jsonData = cJSON_Print(jsonObject);
+    cJSON_Delete(jsonObject);
+    return jsonData;
 }
 
 /**
