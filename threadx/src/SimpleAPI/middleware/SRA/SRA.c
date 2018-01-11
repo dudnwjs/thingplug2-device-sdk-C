@@ -28,4 +28,3 @@ void SRAConvertCSVData(char *merge, char *data)
         strncat(merge,",",strlen(","));
     strncat(merge,data,strlen(data));
 }
-

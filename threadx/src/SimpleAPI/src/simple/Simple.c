@@ -82,10 +82,10 @@ int tpSimpleAddData(char* data, unsigned char length) {
  * @param[in] useAddedData : use added data flag
  * @return int : result code
  */
-int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
+ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
     int rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/telemetry", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_TELEMETRY, mServiceID, mDeviceID);
 
     if(useAddedData) {
         if(!gContent || !gContent->data) return TP_SDK_INVALID_PARAMETER;
@@ -112,7 +112,7 @@ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
 
         char* jsonData;
         cJSON* jsonObject = cJSON_CreateObject();
-
+    
         size = telemetry->total;
         for(i = 0; i < size; i++) {
             element = (telemetry->element + i);
@@ -138,17 +138,17 @@ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
  * @param[in] attribute : attributes
  * @return int : result code
  */
-int tpSimpleAttribute(ArrayElement* attribute) {
+ int tpSimpleAttribute(ArrayElement* attribute) {
     if(!attribute) return TP_SDK_INVALID_PARAMETER;
     int rc = TP_SDK_FAILURE;
     int i, size;
     char topic[SIZE_TOPIC] = "";
     Element* element;
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/attribute", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_ATTRIBUTE, mServiceID, mDeviceID);
 
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
-
+    
     size = attribute->total;
     for(i = 0; i < size; i++) {
         element = (attribute->element + i);
@@ -177,7 +177,7 @@ int tpSimpleResult(RPCResponse* response) {
     if(!response) return TP_SDK_INVALID_PARAMETER;
     int i, size, rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_UP, mServiceID, mDeviceID);
 
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
@@ -226,13 +226,13 @@ int tpSimpleSubscribe(DeviceSubscribe* subscribe) {
     if(!subscribe) return TP_SDK_INVALID_PARAMETER;
     int rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_UP, mServiceID, mDeviceID);
 
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
     cJSON* attributeArray = cJSON_CreateStringArray(subscribe->attribute, subscribe->attribute_size);
     cJSON* telemetryArray = cJSON_CreateStringArray(subscribe->telemetry, subscribe->telemetry_size);
-
+    
     cJSON_AddStringToObject(jsonObject, CMD, subscribe->cmd);
     cJSON_AddNumberToObject(jsonObject, CMD_ID, subscribe->cmdId);
     cJSON_AddStringToObject(jsonObject, SERVICE_NAME, mServiceID);
@@ -247,7 +247,7 @@ int tpSimpleSubscribe(DeviceSubscribe* subscribe) {
     }
     cJSON_AddItemToObject(jsonObject, ATTRIBUTE, attributeArray);
     cJSON_AddItemToObject(jsonObject, TELEMETRY, telemetryArray);
-
+    
     jsonData = cJSON_Print(jsonObject);
     cJSON_Delete(jsonObject);
 
@@ -270,7 +270,7 @@ int tpSimpleSubscribe(DeviceSubscribe* subscribe) {
  * @return int : result code
  */
 int tpSimpleInitialize(char* serviceID, char* deviceID) {
-    if(!serviceID) return TP_SDK_FAILURE;
+    if(!serviceID || !deviceID) return TP_SDK_FAILURE;
     mServiceID = serviceID;
     mDeviceID = deviceID;
     {
@@ -354,58 +354,15 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format) {
 }
 
 /**
- * @brief send raw data to result
- * @param[in] response : control result response
- * @return int : result code
- */
- int tpSimpleRawResult(RPCResponse* response) {
-    if(!response) return TP_SDK_INVALID_PARAMETER;
-    int rc = TP_SDK_FAILURE;
-    char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
-
-    char* jsonData;
-    cJSON* jsonObject = cJSON_CreateObject();
-    cJSON* rpcRspObject = cJSON_CreateObject();
-    cJSON* resultObject;
-
-    cJSON_AddStringToObject(jsonObject, CMD, response->cmd);
-    cJSON_AddNumberToObject(jsonObject, CMD_ID, response->cmdId);
-    cJSON_AddStringToObject(jsonObject, RESULT, response->result);
-
-    cJSON_AddStringToObject(rpcRspObject, JSONRPC, response->jsonrpc);
-    cJSON_AddNumberToObject(rpcRspObject, ID, response->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, response->method);
-    resultObject = cJSON_CreateRaw(response->resultBody);
-    if(response->fail) {
-        cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);        
-    } else {
-        cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
-    }
-    cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
-    jsonData = cJSON_Print(jsonObject);
-    cJSON_Delete(jsonObject);
-    {
-        char str[128];
-        snprintf(str,128,"tpSimpleRawResult\r\ntopic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, jsonData);
-    }
-    rc = handleMQTTPublishMessageWithTopic(topic, jsonData);
-    if(jsonData) free(jsonData);
-    return rc;
-}
-
-/**
  * @brief send all raw data to result
  * @param[in] result : control result 
  * @return int : result code
  */
-int tpSimpleRawResult2(char* result) {
+ int tpSimpleRawResult(char* result) {
     if(!result) return TP_SDK_INVALID_PARAMETER;
     int rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_UP, mServiceID, mDeviceID);
 
     {
         char str[128];
@@ -416,4 +373,3 @@ int tpSimpleRawResult2(char* result) {
     rc = handleMQTTPublishMessageWithTopic(topic, result);
     return rc;
 }
-

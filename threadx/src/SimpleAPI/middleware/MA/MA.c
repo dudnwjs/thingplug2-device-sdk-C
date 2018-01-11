@@ -21,8 +21,11 @@
 #include <SimpleAPI/middleware/SMA/SMA.h>
 #include <SimpleAPI/middleware/SRA/SRA.h>
 
+#define MQTT_CLIENT_ID                      "%s_%s"
 #define MQTT_TOPIC_CONTROL_DOWN             "v1/dev/%s/%s/down"
+
 #define TOPIC_SUBSCRIBE_SIZE                1
+
 #define SIZE_RESPONSE_CODE                  10
 #define SIZE_RESPONSE_MESSAGE               128
 // #define SIZE_TOPIC                          128
@@ -55,8 +58,9 @@ typedef struct
 static char mTopicControlDown[SIZE_TOPIC] = "";
 static char mClientID[SIZE_CLIENT_ID] = "";
 
-static void attribute(void);
-static int telemetry(void);
+static void attribute();
+static int telemetry();
+static char* make_response(RPCResponse *rsp);
 
 void MQTTConnected(int result) {
     {
@@ -120,8 +124,8 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         SKTDebugPrint(LOG_LEVEL_INFO, str);
     }
 
-    if(msg == NULL || msgLen < 1) {
-        return;
+	if(msg == NULL || msgLen < 1) {
+		return;
     }
     char payload[SIZE_PAYLOAD] = "";
     memcpy(payload, msg, msgLen);
@@ -175,9 +179,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO SOFTWARE REINSTALL
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_REINSTALL");
             
-        } else if(strncmp(method, RPC_SOFTWARE_UNINSTALL, strlen(RPC_SOFTWARE_UNINSTALL)) == 0) {
-            // TODO SOFTWARE UNINSTALL
-            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_UNINSTALL");
+        } else if(strncmp(method, RPC_SOFTWARE_REUNINSTALL, strlen(RPC_SOFTWARE_REUNINSTALL)) == 0) {
+            // TODO SOFTWARE REUNINSTALL
+            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_REUNINSTALL");
             
         } else if(strncmp(method, RPC_SOFTWARE_UPDATE, strlen(RPC_SOFTWARE_UPDATE)) == 0) {
             // TODO SOFTWARE UPDATE
@@ -186,7 +190,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         } else if(strncmp(method, RPC_FIRMWARE_UPGRADE, strlen(RPC_FIRMWARE_UPGRADE)) == 0) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
-            
+
         } else if(strncmp(method, RPC_CLOCK_SYNC, strlen(RPC_CLOCK_SYNC)) == 0) {
             // TODO CLOCK SYNC
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_CLOCK_SYNC");
@@ -224,7 +228,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             snprintf(body, sizeof(body), "{\"%s\":%d}", controlObject->string, control);
             rsp.resultBody = body;
             rsp.result = "success";
-            tpSimpleRawResult(&rsp);
+            char* rpcRsp = make_response(&rsp);
+            tpSimpleRawResult(rpcRsp);
+            free(rpcRsp);
         }
         // control fail
         else {
@@ -261,7 +267,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         int cmdId = cmdIdObject->valueint;
         if(!cmd) return;
         // if attribute control
-        if(strncmp(cmd, "set_attr", strlen("set_attr")) == 0) {
+        if(strncmp(cmd, "setAttribute", strlen("setAttribute")) == 0) {
             cJSON* attribute = cJSON_GetObjectItemCaseSensitive(root, "attribute");
             if(!attribute) return;
             cJSON* act7colorLedObject = cJSON_GetObjectItemCaseSensitive(attribute, "act7colorLed");
@@ -274,9 +280,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             }
             int rc = RGB_LEDControl(act7colorLed);
 
-            ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));            
+            ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));
             arrayElement->capacity = 1;
-            arrayElement->element = calloc(1, sizeof(Element) * arrayElement->capacity);            
+            arrayElement->element = calloc(1, sizeof(Element) * arrayElement->capacity);
             Element* item = arrayElement->element + arrayElement->total;
             item->type = JSON_TYPE_LONG;
             item->name = "act7colorLed";
@@ -301,22 +307,20 @@ long long current_timestamp() {
 
 char *sensor_list[] = { "temp1", "humi1", "light1" };
 
-static int telemetry(void) {
-
-#ifdef JSON_TELEMETRY
+static int telemetry() {
     mStep = PROCESS_TELEMETRY;
-    // TODO make data
-    // int i;
+#ifdef JSON_FORMAT
     char *temp, *humi, *light;
     int len;
     ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));
-
+    
     arrayElement->capacity = 4;
     arrayElement->element = calloc(1, sizeof(Element) * arrayElement->capacity);
+    Element *item;
 
     SMAGetData(sensor_list[arrayElement->total], &temp, &len);
     temp = SRAConvertRawData(temp);
-    Element* item = arrayElement->element + arrayElement->total;
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
     item->name = sensor_list[arrayElement->total];
     item->value = temp;
@@ -329,7 +333,7 @@ static int telemetry(void) {
     item->name = sensor_list[arrayElement->total];
     item->value = humi;
     arrayElement->total++;
-
+    
     SMAGetData(sensor_list[arrayElement->total], &light, &len);
     light = SRAConvertRawData(light);
     item = arrayElement->element + arrayElement->total;
@@ -351,13 +355,10 @@ static int telemetry(void) {
     free(temp);
     free(humi);
     free(light);
-
-    return rc;
 #endif
-#ifdef CSV_TELEMETRY
-    char *temp, *humi, *light;
-    char time[16];
-    int len,total_len,rc;
+#ifdef CSV_FORMAT
+    char *temp, *humi, *light,time[16];
+    int len,total_len;
 
     unsigned long curr_time = current_timestamp();
     snprintf(time, 16, "%lu", curr_time);
@@ -379,9 +380,8 @@ static int telemetry(void) {
     free(temp);
     free(humi);
     free(light);
-
-    return rc;
 #endif
+    return rc;
 }
 
 static unsigned long getAvailableMemory() {
@@ -409,59 +409,45 @@ static int getNetworkInfo(NetworkInfo* info, char* interface) {
 
 static void attribute(void) {
 
-#ifdef JSON_TELEMETRY
+#ifdef JSON_FORMAT
     ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));
-
-    arrayElement->capacity = 13;
+    
+    arrayElement->capacity = 15;
     arrayElement->element = calloc(1, sizeof(Element) * arrayElement->capacity);
-
-    Element* item;
-    item = &arrayElement->element[arrayElement->total];
+    
+    Element* item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_LONG;
     item->name = "sysAvailableMemory";
     unsigned long availableMemory = getAvailableMemory();
     item->value = &availableMemory;
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
-    item->type = JSON_TYPE_LONG;
-    item->name = "sysBatteryLevel";
-    int batteryLevel = 100;
-    item->value = &batteryLevel;
-    arrayElement->total++;
-
-    // item = arrayElement->element + arrayElement->total;
-    // item->type = JSON_TYPE_STRING;
-    // item->name = "sysBatteryStatus";
-    // item->value = "charging";
-    // arrayElement->total++;
-
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_STRING;
     item->name = "sysFirmwareVersion";
     item->value = "2.0.0";
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_STRING;
     item->name = "sysHardwareVersion";
     item->value = "1.0";
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_STRING;
     item->name = "sysSerialNumber";
     item->value = "400715-1703-003321-1641";
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_LONG;
     item->name = "sysErrorCode";
     int errorCode = 0;
     item->value = &errorCode;
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_STRING;
     item->name = "sysNetworkType";
     item->value = "ethernet";
@@ -470,7 +456,7 @@ static void attribute(void) {
     NetworkInfo info;
     memset(&info, 0, sizeof(NetworkInfo));
     getNetworkInfo(&info, "eth0");
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_STRING;
     item->name = "sysDeviceIpAddress";
     item->value = info.deviceIpAddress;
@@ -494,19 +480,19 @@ static void attribute(void) {
     item->value = MQTT_HOST;
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
-    item->name = "sysLocationLatitude";
+    item->name = "sysLocationLatitude";    
     item->value = "35.1689766";
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_RAW;
     item->name = "sysLocationLongitude";
     item->value = "129.1338524";
     arrayElement->total++;
 
-    item = &arrayElement->element[arrayElement->total];
+    item = arrayElement->element + arrayElement->total;
     item->type = JSON_TYPE_LONG;
     item->name = "act7colorLed";
     int act7colorLed = 0;
@@ -519,7 +505,7 @@ static void attribute(void) {
 
     mStep = PROCESS_TELEMETRY;
 #endif
-#ifdef CSV_TELEMETRY
+#ifdef CSV_FORMAT
     char csv_attr[256] = "";
     unsigned long availableMemory = getAvailableMemory();
     char tmp[64];
@@ -559,6 +545,31 @@ static void attribute(void) {
 #endif
 }
 
+static char* make_response(RPCResponse *rsp) {
+    char* jsonData;
+    cJSON* jsonObject = cJSON_CreateObject();
+    cJSON* rpcRspObject = cJSON_CreateObject();
+    cJSON* resultObject;
+
+    cJSON_AddStringToObject(jsonObject, CMD, rsp->cmd);
+    cJSON_AddNumberToObject(jsonObject, CMD_ID, rsp->cmdId);
+    cJSON_AddStringToObject(jsonObject, RESULT, rsp->result);
+
+    cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
+    cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
+    cJSON_AddStringToObject(rpcRspObject, METHOD, rsp->method);
+    resultObject = cJSON_CreateRaw(rsp->resultBody);
+    if(rsp->fail) {
+        cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
+    } else {
+        cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
+    }
+    cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
+    jsonData = cJSON_Print(jsonObject);
+    cJSON_Delete(jsonObject);
+    return jsonData;
+}
+
 /**
  * @brief get Device MAC Address without Colon.
  * @return mac address
@@ -590,9 +601,9 @@ int start() {
         SKTDebugPrint(LOG_LEVEL_INFO, str);
     }
     // create clientID - MAC address
-    char* clientID = GetMacAddressWithoutColon();
-    memcpy(mClientID, clientID, strlen(clientID));
-    free(clientID);
+    char* macAddress = GetMacAddressWithoutColon();
+    snprintf(mClientID, sizeof(mClientID), MQTT_CLIENT_ID, SIMPLE_DEVICE_NAME, macAddress);
+    free(macAddress);
     {
         char str[64];
         snprintf(str,64,"client id : %s", mClientID);
@@ -602,15 +613,15 @@ int start() {
     snprintf(mTopicControlDown, SIZE_TOPIC, MQTT_TOPIC_CONTROL_DOWN, SIMPLE_SERVICE_NAME, SIMPLE_DEVICE_NAME);    
     char* subscribeTopics[] = { mTopicControlDown };
 
-#if(MQTT_ENABLE_SERVER_CERT_AUTH)
-    char host[] = MQTT_SECURE_HOST;
-    int port = MQTT_SECURE_PORT;
+#if(1)
+	char host[] = MQTT_SECURE_HOST;
+	int port = MQTT_SECURE_PORT;
 #else
-    char host[] = MQTT_HOST;
-    int port = MQTT_PORT;
+	char host[] = MQTT_HOST;
+	int port = MQTT_PORT;
 #endif
-    rc = tpSDKCreate(host, port, MQTT_KEEP_ALIVE, SIMPLE_DEVICE_TOKEN, NULL,
-                     MQTT_ENABLE_SERVER_CERT_AUTH, subscribeTopics, TOPIC_SUBSCRIBE_SIZE, NULL, mClientID);
+    rc = tpSDKCreate(host, port, MQTT_KEEP_ALIVE, SIMPLE_DEVICE_TOKEN, NULL, 
+        1, subscribeTopics, TOPIC_SUBSCRIBE_SIZE, NULL, mClientID);
     {
         char str[64];
         snprintf(str,64,"tpSDKCreate result : %d", rc);
