@@ -17,7 +17,7 @@
  * Enumerations
  ****************************************
  */
- typedef enum data_type {
+typedef enum data_type {
     JSON_TYPE_STRING = 0,     // char pointer
     JSON_TYPE_RAW,            // deal with words numerically
     JSON_TYPE_LONG,           // int, long type
@@ -118,8 +118,5 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format);
 
 int tpSimpleRawAttribute(char* attribute, DATA_FORMAT format);
 
-int tpSimpleRawResult(RPCResponse* response);
-
-int tpSimpleRawResult2(char* result);
-
+int tpSimpleRawResult(char* result);
 #endif
