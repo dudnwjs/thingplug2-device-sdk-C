@@ -244,21 +244,27 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             int act7colorLed = act7colorLedObject->valueint;
             SKTDebugPrint(LOG_LEVEL_INFO, "act7colorLed : %d, %d", act7colorLed, cmdId);
             int rc = RGB_LEDControl(act7colorLed);
-
+            if(rc != 0) {
+                act7colorLed = RGB_LEDStatus();
+            }
+#ifdef JSON_FORMAT
             ArrayElement* arrayElement = calloc(1, sizeof(ArrayElement));
             arrayElement->capacity = 1;
             arrayElement->element = calloc(1, sizeof(Element) * arrayElement->capacity);
             Element* item = arrayElement->element + arrayElement->total;
             item->type = JSON_TYPE_LONG;
             item->name = "act7colorLed";
-            if(rc != 0) {
-                act7colorLed = RGB_LEDStatus();
-            }
             item->value = &act7colorLed;
             arrayElement->total++;
             tpSimpleAttribute(arrayElement);
             free(arrayElement->element);
             free(arrayElement);
+#endif
+#ifdef CSV_FORMAT
+            char csvAttr[256] = "";
+            snprintf(csvAttr, sizeof(csvAttr), ",,,,,,,,,,%d", act7colorLed);
+            tpSimpleRawAttribute(csvAttr, FORMAT_CSV);
+#endif
         }
     }
     cJSON_Delete(root);
