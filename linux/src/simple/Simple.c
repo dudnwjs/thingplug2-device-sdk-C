@@ -191,7 +191,6 @@ int tpSimpleResult(RPCResponse* response) {
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, response->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, response->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, response->method);
     size = response->resultArray->total;
     for(i = 0; i < size; i++) {
         element = (response->resultArray->element + i);

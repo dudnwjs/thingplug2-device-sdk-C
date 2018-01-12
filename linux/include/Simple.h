@@ -67,8 +67,6 @@ typedef enum data_format {
      char* jsonrpc;
      /** request ID from server(int) **/
      int id;
-     /** method(string) **/
-     char* method;
      /** control result(string) **/
      char* result;
      /** fail flag - if 0 SUCCESS(unsigned char) **/

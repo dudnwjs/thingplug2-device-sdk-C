@@ -94,7 +94,7 @@ void MQTTConnected(int result) {
 void MQTTSubscribed(int result) {
     SKTDebugPrint(LOG_LEVEL_INFO, "MQTTSubscribed result : %d", result);
 
-    if(result == 0) {     
+    if(result == 0) {
         char data[SIZE_PAYLOAD] = "";
         make_attribute(data);
 #ifdef JSON_FORMAT
@@ -200,7 +200,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
             // ATCOM INITIATED
-            char* params = cJSON_Print(paramsObject);
+            char* params = cJSON_PrintUnformatted(paramsObject);
             SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
             free(params);
             
@@ -222,7 +222,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO REPORT
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_REMOTE");
             // ATCOM INITIATED
-            char* params = cJSON_Print(paramsObject);
+            char* params = cJSON_PrintUnformatted(paramsObject);
             SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
             free(params);
 
@@ -236,7 +236,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // USER
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_USER");
             // ATCOM INITIATED
-            char* params = cJSON_Print(paramsObject);
+            char* params = cJSON_PrintUnformatted(paramsObject);
             SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
             free(params);
             
@@ -256,7 +256,6 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             rsp.cmdId = 1;
             rsp.jsonrpc = rpc;
             rsp.id = id;
-            rsp.method = method;
             rsp.fail = rc;
             // control success
             if(rc == 0) {            
@@ -280,7 +279,8 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             }
             int error = tpSimpleRawResult(rpcRsp);
             set_error(error);
-            free(rpcRsp);            
+            free(rpcRsp);
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
 
             // ATCOM FINISHED
             if(isTwoWay) {
@@ -298,7 +298,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         if(strncmp(cmd, "setAttribute", strlen("setAttribute")) == 0) {
             cJSON* attributeObject = cJSON_GetObjectItemCaseSensitive(root, "attribute");
             if(!attributeObject) return;
-            char* attribute = cJSON_Print(attributeObject);
+            char* attribute = cJSON_PrintUnformatted(attributeObject);
             // ATCOM INITIATED
             SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=set_attr,%d,1,%s", cmdId, attribute);
             free(attribute);
@@ -324,8 +324,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             set_error(error);
             free(arrayElement->element);
             free(arrayElement);
-#endif
-#ifdef CSV_FORMAT
+#elif defined(CSV_FORMAT)
             char csvAttr[256] = "";
             snprintf(csvAttr, sizeof(csvAttr), ",,,,,,,,,,%d", act7colorLed);
             int error = tpSimpleRawAttribute(csvAttr, FORMAT_CSV);
@@ -356,7 +355,6 @@ static char* make_response(RPCResponse *rsp) {
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, rsp->method);
     resultObject = cJSON_CreateRaw(rsp->resultBody);
     if(rsp->fail) {
         cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
@@ -364,7 +362,7 @@ static char* make_response(RPCResponse *rsp) {
         cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
     }
     cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
-    jsonData = cJSON_Print(jsonObject);
+    jsonData = cJSON_PrintUnformatted(jsonObject);
     cJSON_Delete(jsonObject);
     return jsonData;
 }
@@ -394,8 +392,7 @@ static void make_telemetry(char *data) {
     snprintf(sensorInfo, sizeof(sensorInfo), "\"%s\":%s", sensor_list[2], light);
     strncat(data, sensorInfo, strlen(sensorInfo));
     strncat(data, "}", strlen("}"));
-#endif
-#ifdef CSV_FORMAT
+#elif defined(CSV_FORMAT)
     SRAConvertCSVData( data, time);
     SRAConvertCSVData( data, temp);
     SRAConvertCSVData( data, humi);
@@ -419,12 +416,13 @@ static void send_data(THINGPLUG_DATA_TYPE tpDataType, DATA_FORMAT format, char *
             break;
     }
     set_error(rc);
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
 }
 
 static unsigned long getAvailableMemory() {
     unsigned long ps = sysconf(_SC_PAGESIZE);
     unsigned long pn = sysconf(_SC_AVPHYS_PAGES);
-    unsigned long availMem = ps * pn;    
+    unsigned long availMem = ps * pn;
     return availMem;
 }
 
@@ -508,8 +506,7 @@ static void make_attribute(char* data) {
     snprintf(attrInfo, sizeof(attrInfo), "\"act7colorLed\":%s", "0");
     strncat(data, attrInfo, strlen(attrInfo));
     strncat(data, "}", strlen("}"));
-#endif
-#ifdef CSV_FORMAT
+#elif defined(CSV_FORMAT)
     // Memory
     SRAConvertCSVData(data, availableMemory);
     // SW Version
@@ -545,7 +542,6 @@ static char* get_error() {
 static void set_error(int errorCode) {
     mErrorCode = errorCode;
 }
-
 
 /**
  * @brief get Device MAC Address without Colon.
@@ -623,8 +619,9 @@ int MARun() {
         SIMPLE_DEVICE_NAME
     );
     start();
-
-    while (mStep < PROCESS_END) {
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
+    int sendTelemetryCount = 0;
+    while (mStep < PROCESS_END && sendTelemetryCount <= 10) {
 		if(tpMQTTIsConnected() && mStep == PROCESS_TELEMETRY) {
             char data[SIZE_PAYLOAD] = "";
             make_telemetry(data);
@@ -635,11 +632,13 @@ int MARun() {
             SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPDAT=1,telemetry,1,%s", data);
             send_data(TELEMETRY_TYPE, FORMAT_CSV, data);
 #endif
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPERR=1");
             char* ret = get_error();
             SKTDebugPrint(LOG_LEVEL_ATCOM, "result : %s", ret);
             free(ret);
+            sendTelemetryCount++;
         }
-        // reconnect when disconnected 
+        // reconnect when disconnected
         // else if(mConnectionStatus == DISCONNECTED) {
         //     start();
         // }
@@ -649,6 +648,8 @@ int MARun() {
             usleep(10000000L);
         #endif
     }
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPCON=0");
     tpSDKDestroy();
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
     return 0;
 }
