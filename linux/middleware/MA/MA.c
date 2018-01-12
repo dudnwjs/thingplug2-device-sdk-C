@@ -189,7 +189,6 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         rsp.cmdId = 1;
         rsp.jsonrpc = rpc;
         rsp.id = id;
-        rsp.method = method;
         rsp.fail = rc;
         // control success
         if(rc == 0) {
@@ -539,7 +538,6 @@ static char* make_response(RPCResponse *rsp) {
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, rsp->method);
     resultObject = cJSON_CreateRaw(rsp->resultBody);
     if(rsp->fail) {
         cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
