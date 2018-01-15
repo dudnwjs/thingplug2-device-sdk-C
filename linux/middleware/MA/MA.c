@@ -237,7 +237,11 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_USER");
             // ATCOM INITIATED
             char* params = cJSON_PrintUnformatted(paramsObject);
-            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
+            if(isTwoWay) {
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
+            } else {
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3,%s", method, id, params);
+            }
             free(params);
             
             if(!paramsObject) return;
@@ -300,7 +304,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             if(!attributeObject) return;
             char* attribute = cJSON_PrintUnformatted(attributeObject);
             // ATCOM INITIATED
-            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=set_attr,%d,1,%s", cmdId, attribute);
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=set_attr,%d,3,%s", cmdId, attribute);
             free(attribute);
 
             cJSON* act7colorLedObject = cJSON_GetObjectItemCaseSensitive(attributeObject, "act7colorLed");
