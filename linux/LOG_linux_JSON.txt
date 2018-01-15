@@ -1,0 +1,212 @@
+root@sptek-beaglebone:~/share/ver2.0/ManagementAgent/source/oneM2M/middleware# output/ThingPlug_Simple_SDK
+[2018-01-15 09:57:32] [MA/MA.c] [616] [INFO]: ThingPlug_Simple_SDK
+[2018-01-15 09:57:32] [MA/MA.c] [624] [ATCOM]: AT+SKTPCON=1,MQTTS,ssl://218.53.242.111,8883,120,simple_v1,82b99fe0f73511e78ba2,myservice,bbb01
+[2018-01-15 09:57:32] [src/net/MQTTClient.c] [341] [INFO]: MQTTAsyncDestroy()
+[2018-01-15 09:57:32] [MA/MA.c] [588] [INFO]: tpMQTTSetCallbacks result : 0
+[2018-01-15 09:57:32] [src/simple/Simple.c] [276] [INFO]: tpSimpleInitialize
+serviceID : myservice, deviceID: bbb01
+[2018-01-15 09:57:32] [MA/MA.c] [591] [INFO]: tpSimpleInitialize : 0
+[2018-01-15 09:57:32] [MA/MA.c] [596] [INFO]: client id : bbb01_78A504F515A4
+[2018-01-15 09:57:32] [src/net/MQTTClient.c] [162] [INFO]: MQTTAsyncCreate()
+[2018-01-15 09:57:32] [MA/MA.c] [611] [INFO]: tpSDKCreate result : 0
+[2018-01-15 09:57:32] [MA/MA.c] [626] [ATCOM]: OK
+[2018-01-15 09:57:32] [MA/MA.c] [82] [INFO]: MQTTConnected result : 0
+[2018-01-15 09:57:32] [MA/MA.c] [89] [INFO]: CONNECTION_STATUS : 2
+[2018-01-15 09:57:32] [MA/MA.c] [91] [ATCOM]: +SKTPCON=0
+[2018-01-15 09:57:32] [src/net/MQTTClient.c] [54] [INFO]: subscribed topic : v1/dev/myservice/bbb01/down
+[2018-01-15 09:57:32] [src/net/MQTTClient.c] [66] [INFO]: on connected : connect onSuccess called
+[2018-01-15 09:57:32] [MA/MA.c] [95] [INFO]: MQTTSubscribed result : 0
+[2018-01-15 09:57:32] [MA/MA.c] [101] [ATCOM]: AT+SKTPDAT=1,attribute,0,{"sysAvailableMemory":340058112,"sysFirmwareVersion":"2.0.0","sysHardwareVersion":"1.0","sysSerialNumber":"710DJC5I10000290","sysErrorCode":0,"sysNetworkType":"ethernet","sysDeviceIpAddress":"192.168.0.4","sysThingPlugIpAddress":"218.53.242.111","sysLocationLatitude":35.1689766,"sysLocationLongitude":129.1338524,"act7colorLed":0}
+[2018-01-15 09:57:32] [src/simple/Simple.c] [345] [INFO]: tpSimpleRawAttribute
+topic : v1/dev/myservice/bbb01/attribute
+{"sysAvailableMemory":340058112,"sysFirmwareVersion":"2.0.0","sysHardwareVersion":"1.0","sysSerialNumber":"710DJC5I10000290","sysErrorCode":0,"sysNetworkType":"ethernet","sysDeviceIpAddress":"192.168.0.4","sysThingPlugIpAddress":"218.53.242.111","sysLocationLatitude":35.1689766,"sysLocationLongitude":129.1338524,"act7colorLed":0}
+[2018-01-15 09:57:32] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:57:42] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977862,"temp1":57.55,"humi1":45,"light1":205}
+[2018-01-15 09:57:42] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977862,"temp1":57.55,"humi1":45,"light1":205}
+[2018-01-15 09:57:42] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:57:42] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:57:42] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:57:43] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/bbb01/down, step : 2
+[2018-01-15 09:57:43] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"bbb01","cmdId":5,"cmd":"jsonRpc","rpcMode":"oneway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"act7colorLed":0}],"id":678675951}}
+[2018-01-15 09:57:43] [MA/MA.c] [237] [INFO]: RPC_USER
+[2018-01-15 09:57:43] [MA/MA.c] [243] [ATCOM]: +SKTPCMD=tp_user,678675951,3,[{"act7colorLed":0}]
+[2018-01-15 09:57:43] [MA/MA.c] [252] [INFO]:
+rpc : 2.0,
+id : 678675951,
+cmd : 0
+[2018-01-15 09:57:43] [src/simple/Simple.c] [365] [INFO]: tpSimpleRawResult
+topic : v1/dev/myservice/bbb01/up
+{"cmd":"jsonRpc","cmdId":1,"result":"success","rpcRsp":{"jsonrpc":"2.0","id":678675951,"result":{"act7colorLed":0}}}
+[2018-01-15 09:57:43] [MA/MA.c] [287] [ATCOM]: OK
+[2018-01-15 09:57:46] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/bbb01/down, step : 2
+[2018-01-15 09:57:46] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"bbb01","cmdId":6,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"act7colorLed":1}],"id":678675952}}
+[2018-01-15 09:57:46] [MA/MA.c] [237] [INFO]: RPC_USER
+[2018-01-15 09:57:46] [MA/MA.c] [241] [ATCOM]: +SKTPCMD=tp_user,678675952,1,[{"act7colorLed":1}]
+[2018-01-15 09:57:46] [MA/MA.c] [252] [INFO]:
+rpc : 2.0,
+id : 678675952,
+cmd : 1
+[2018-01-15 09:57:46] [MA/MA.c] [271] [ATCOM]: AT+SKTPRES=1,678675952,0,{"act7colorLed":1}
+[2018-01-15 09:57:46] [src/simple/Simple.c] [365] [INFO]: tpSimpleRawResult
+topic : v1/dev/myservice/bbb01/up
+{"cmd":"jsonRpc","cmdId":1,"result":"success","rpcRsp":{"jsonrpc":"2.0","id":678675952,"result":{"act7colorLed":1}}}
+[2018-01-15 09:57:46] [MA/MA.c] [287] [ATCOM]: OK
+[2018-01-15 09:57:46] [MA/MA.c] [291] [ATCOM]: +SKTPCMD=tp_user,678675952,3
+[2018-01-15 09:57:52] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/bbb01/down, step : 2
+[2018-01-15 09:57:52] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"bbb01","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"oneway","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":678675953}}
+[2018-01-15 09:57:52] [MA/MA.c] [223] [INFO]: RPC_REMOTE
+[2018-01-15 09:57:52] [MA/MA.c] [226] [ATCOM]: +SKTPCMD=tp_remote,678675953,1,["AT+CPSMS=1,,,01000001,00100011"]
+[2018-01-15 09:57:52] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977872,"temp1":46.23,"humi1":43,"light1":223}
+[2018-01-15 09:57:52] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977872,"temp1":46.23,"humi1":43,"light1":223}
+[2018-01-15 09:57:52] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:57:52] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:57:52] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:58:02] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977882,"temp1":68.16,"humi1":46,"light1":216}
+[2018-01-15 09:58:02] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977882,"temp1":68.16,"humi1":46,"light1":216}
+[2018-01-15 09:58:02] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:58:02] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:58:02] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:58:09] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/bbb01/down, step : 2
+[2018-01-15 09:58:09] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"bbb01","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":678675954}}
+[2018-01-15 09:58:09] [MA/MA.c] [223] [INFO]: RPC_REMOTE
+[2018-01-15 09:58:09] [MA/MA.c] [226] [ATCOM]: +SKTPCMD=tp_remote,678675954,1,["AT+CPSMS=1,,,01000001,00100011"]
+[2018-01-15 09:58:09] [MA/MA.c] [233] [ATCOM]: +SKTPCMD=tp_remote,678675954,3
+[2018-01-15 09:58:12] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977892,"temp1":49.44,"humi1":44,"light1":244}
+[2018-01-15 09:58:12] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977892,"temp1":49.44,"humi1":44,"light1":244}
+[2018-01-15 09:58:12] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:58:12] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:58:12] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:58:19] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/bbb01/down, step : 2
+[2018-01-15 09:58:19] [MA/MA.c] [140] [INFO]: payload : {"deviceId":"82ba8a40-f735-11e7-8ba2-6f996b68699e","cmdId":1096461571,"cmd":"setAttribute","attribute":{"act7colorLed":0}}
+[2018-01-15 09:58:19] [MA/MA.c] [307] [ATCOM]: +SKTPCMD=set_attr,1096461571,3,{"act7colorLed":0}
+[2018-01-15 09:58:19] [MA/MA.c] [313] [INFO]: act7colorLed : 0, 1096461571
+[2018-01-15 09:58:19] [src/simple/Simple.c] [164] [INFO]: tpSimpleAttribute
+topic : v1/dev/myservice/bbb01/attribute
+{
+        "act7colorLed": 0
+}
+[2018-01-15 09:58:22] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977902,"temp1":33.02,"humi1":42,"light1":202}
+[2018-01-15 09:58:22] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977902,"temp1":33.02,"humi1":42,"light1":202}
+[2018-01-15 09:58:22] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:58:22] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:58:22] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:58:32] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977912,"temp1":44.71,"humi1":41,"light1":221}
+[2018-01-15 09:58:32] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977912,"temp1":44.71,"humi1":41,"light1":221}
+[2018-01-15 09:58:32] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:58:32] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:58:32] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:58:42] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977922,"temp1":28.65,"humi1":45,"light1":215}
+[2018-01-15 09:58:42] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977922,"temp1":28.65,"humi1":45,"light1":215}
+[2018-01-15 09:58:42] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:58:42] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:58:42] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:58:52] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977932,"temp1":69.30,"humi1":40,"light1":230}
+[2018-01-15 09:58:52] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977932,"temp1":69.30,"humi1":40,"light1":230}
+[2018-01-15 09:58:52] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:58:52] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:58:52] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:59:02] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977942,"temp1":42.13,"humi1":43,"light1":213}
+[2018-01-15 09:59:02] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977942,"temp1":42.13,"humi1":43,"light1":213}
+[2018-01-15 09:59:02] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:59:02] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:59:02] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:59:12] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977952,"temp1":22.99,"humi1":49,"light1":249}
+[2018-01-15 09:59:12] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977952,"temp1":22.99,"humi1":49,"light1":249}
+[2018-01-15 09:59:12] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:59:12] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:59:12] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:59:22] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977962,"temp1":60.74,"humi1":44,"light1":224}
+[2018-01-15 09:59:22] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977962,"temp1":60.74,"humi1":44,"light1":224}
+[2018-01-15 09:59:22] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:59:22] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:59:22] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:59:32] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977972,"temp1":26.19,"humi1":49,"light1":219}
+[2018-01-15 09:59:32] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977972,"temp1":26.19,"humi1":49,"light1":219}
+[2018-01-15 09:59:32] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:59:32] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:59:32] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:59:42] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977982,"temp1":23.91,"humi1":41,"light1":241}
+[2018-01-15 09:59:42] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977982,"temp1":23.91,"humi1":41,"light1":241}
+[2018-01-15 09:59:42] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:59:42] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:59:42] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 09:59:52] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515977992,"temp1":66.57,"humi1":47,"light1":207}
+[2018-01-15 09:59:52] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515977992,"temp1":66.57,"humi1":47,"light1":207}
+[2018-01-15 09:59:52] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 09:59:52] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 09:59:52] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 10:00:02] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515978002,"temp1":60.19,"humi1":49,"light1":219}
+[2018-01-15 10:00:02] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515978002,"temp1":60.19,"humi1":49,"light1":219}
+[2018-01-15 10:00:02] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 10:00:02] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 10:00:02] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 10:00:12] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515978012,"temp1":49.90,"humi1":40,"light1":240}
+[2018-01-15 10:00:12] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515978012,"temp1":49.90,"humi1":40,"light1":240}
+[2018-01-15 10:00:12] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 10:00:12] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 10:00:12] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 10:00:22] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515978022,"temp1":60.88,"humi1":48,"light1":238}
+[2018-01-15 10:00:22] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515978022,"temp1":60.88,"humi1":48,"light1":238}
+[2018-01-15 10:00:22] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 10:00:22] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 10:00:22] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 10:00:32] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515978032,"temp1":45.02,"humi1":42,"light1":202}
+[2018-01-15 10:00:32] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515978032,"temp1":45.02,"humi1":42,"light1":202}
+[2018-01-15 10:00:32] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 10:00:32] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 10:00:32] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 10:00:42] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515978042,"temp1":35.98,"humi1":48,"light1":248}
+[2018-01-15 10:00:42] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515978042,"temp1":35.98,"humi1":48,"light1":248}
+[2018-01-15 10:00:42] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 10:00:42] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 10:00:42] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
+[2018-01-15 10:00:43] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/bbb01/down, step : 2
+[2018-01-15 10:00:43] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"bbb01","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://218.53.242.111:80/portal/services/myservice/firmwares/7/ebb28bde-5b6d-4920-8fb2-e4cd93d3751e/download","http://218.53.242.111:80/portal/firmware-upgrade-devices/11/ebb28bde-5b6d-4920-8fb2-e4cd93d3751e"],"id":678675955}}
+[2018-01-15 10:00:43] [MA/MA.c] [201] [INFO]: RPC_FIRMWARE_UPGRADE
+[2018-01-15 10:00:43] [MA/MA.c] [204] [ATCOM]: +SKTPCMD=tp_fwupgrade,678675955,1,["http://218.53.242.111:80/portal/services/myservice/firmwares/7/ebb28bde-5b6d-4920-8fb2-e4cd93d3751e/download","http://218.53.242.111:80/portal/firmware-upgrade-devices/11/ebb28bde-5b6d-4920-8fb2-e4cd93d3751e"]
+[2018-01-15 10:00:43] [MA/MA.c] [211] [ATCOM]: +SKTPCMD=tp_fwupgrade,678675955,3
+[2018-01-15 10:00:52] [MA/MA.c] [633] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1515978052,"temp1":25.38,"humi1":48,"light1":238}
+[2018-01-15 10:00:52] [src/simple/Simple.c] [310] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/bbb01/telemetry
+{"ts":1515978052,"temp1":25.38,"humi1":48,"light1":238}
+[2018-01-15 10:00:52] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-15 10:00:52] [MA/MA.c] [639] [ATCOM]: AT+SKTPERR=1
+[2018-01-15 10:00:52] [MA/MA.c] [641] [ATCOM]: result : +SKTPE:0
