@@ -396,8 +396,8 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
     cJSON_Delete(root);
 }
 
-long long current_timestamp() {
-    time_t timer;
+unsigned int current_timestamp() {
+    unsigned int timer;
     timer = ntp_time() + get_npt_offset();
     return timer;
 }
@@ -432,8 +432,8 @@ char *sensor_list[] = { "temp1", "humi1", "light1" };
 static void make_telemetry(char *data) {
     char *temp, *humi, *light, time[16] = "";
     int len;
-    long long ctime = current_timestamp();
-    snprintf(time, 16, "%lld", ctime);
+    unsigned int ctime = current_timestamp();
+    snprintf(time, 16, "%u", ctime);
     SMAGetData(sensor_list[0], &temp, &len);
     SMAGetData(sensor_list[1], &humi, &len);
     SMAGetData(sensor_list[2], &light, &len);
