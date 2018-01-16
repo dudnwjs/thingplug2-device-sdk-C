@@ -224,10 +224,10 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
             // ATCOM INITIATED
-            char* params = cJSON_Print(paramsObject);
+            char* params = cJSON_PrintUnformatted(paramsObject);
             {
-                char str[128];
-                snprintf(str,128,"+SKTPCMD=%s,%d,1,%s", method, id, params);
+                char str[512];
+                snprintf(str,512,"+SKTPCMD=%s,%d,1,%s", method, id, params);
                 SKTDebugPrint(LOG_LEVEL_ATCOM, str);
             }
 
@@ -238,8 +238,8 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // ATCOM FINISHED
             if(isTwoWay) {
                 {
-                    char str[128];
-                    snprintf(str,128,"+SKTPCMD=%s,%d,3", method, id);
+                    char str[512];
+                    snprintf(str,512,"+SKTPCMD=%s,%d,3", method, id);
                     SKTDebugPrint(LOG_LEVEL_ATCOM, str);
                 }
             }
@@ -255,7 +255,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO REPORT
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_REMOTE");
             // ATCOM INITIATED
-            char* params = cJSON_Print(paramsObject);
+            char* params = cJSON_PrintUnformatted(paramsObject);
             {
                 char str[128];
                 snprintf(str,128,"+SKTPCMD=%s,%d,1,%s", method, id, params);
@@ -277,7 +277,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // USER
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_USER");
             // ATCOM INITIATED
-            char* params = cJSON_Print(paramsObject);
+            char* params = cJSON_PrintUnformatted(paramsObject);
             {
                 char str[128];
                 snprintf(str,128,"+SKTPCMD=%s,%d,1,%s", method, id, params);
@@ -422,7 +422,7 @@ static char* make_response(RPCResponse *rsp) {
         cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
     }
     cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
-    jsonData = cJSON_Print(jsonObject);
+    jsonData = cJSON_PrintUnformatted(jsonObject);
     cJSON_Delete(jsonObject);
     return jsonData;
 }
