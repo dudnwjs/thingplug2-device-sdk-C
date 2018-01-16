@@ -535,10 +535,10 @@ static void make_attribute(char* data) {
     snprintf(attrInfo, sizeof(attrInfo), "\"sysThingPlugIpAddress\":\"%s\",", MQTT_HOST);
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
-    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLatitude\":%s,", "35.1689766");
+    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLatitude\":%s,","37.380257" );
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
-    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLongitude\":%s,", "129.1338524");
+    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLongitude\":%s,", "127.115479");
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
     snprintf(attrInfo, sizeof(attrInfo), "\"act7colorLed\":%s", "0");
