@@ -486,8 +486,8 @@ static unsigned long getAvailableMemory() {
 
 }
 
-char* deviceIpAddress;
-char* gatewayIpAddress = NULL;
+char* deviceIpAddress[30];
+char* gatewayIpAddress[30];
 
 void setIpAddress(char *ip, char *gw)
 {
