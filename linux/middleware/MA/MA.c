@@ -501,10 +501,10 @@ static void make_attribute(char* data) {
     snprintf(attrInfo, sizeof(attrInfo), "\"sysThingPlugIpAddress\":\"%s\",", MQTT_HOST);
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
-    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLatitude\":%s,", "35.1689766");
+    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLatitude\":%s,", "37.380257");
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
-    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLongitude\":%s,", "129.1338524");
+    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLongitude\":%s,", "127.115479");
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
     snprintf(attrInfo, sizeof(attrInfo), "\"act7colorLed\":%s", "0");
@@ -528,9 +528,9 @@ static void make_attribute(char* data) {
     // ServerIPAddr
     SRAConvertCSVData(data, MQTT_HOST); 
     // Latitude
-    SRAConvertCSVData(data, "35.1689766"); 
+    SRAConvertCSVData(data, "37.380257"); 
     // Longitude
-    SRAConvertCSVData(data, "129.1338524"); 
+    SRAConvertCSVData(data, "127.115479"); 
     // Led    
     SRAConvertCSVData(data, "0");
 #endif
