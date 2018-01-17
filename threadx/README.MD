@@ -152,7 +152,7 @@ ThingPlug_Simple_SDK 실행
 ---
 1. 실행 로그 확인
 ---
-![LOG_ThreadX.txt](./LOG_ThreadX.txt)
+[LOG_ThreadX.txt](./LOG_ThreadX.txt)
 ---
 2. Thingplug SensorData
 ---
