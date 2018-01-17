@@ -61,14 +61,14 @@ MQTT broker 와의 연결을 위한 정보 및 디바이스 정보를 설정해�
 #define MQTT_SECURE_PORT                    8883						
 #define MQTT_KEEP_ALIVE                     120
 #define MQTT_ENABLE_SERVER_CERT_AUTH        0
-#define LOGIN_NAME                          ""
+#define SIMPLE_DEVICE_TOKEN                 ""
 #define SIMPLE_SERVICE_NAME                 ""
 #define SIMPLE_DEVICE_NAME                  ""
 ```
 
 변수 | 값 | 용도 
 ------------ | ------------- | -------------
-__LOGIN_NAME__ | ThingPlug 포털을 통해 발급받은 디바이스 토큰 | MQTT 로그인 사용자명으로 사용
+__SIMPLE_DEVICE_TOKEN__ | ThingPlug 포털을 통해 발급받은 디바이스 토큰 | MQTT 로그인 사용자명으로 사용
 __SIMPLE_SERVICE_NAME__ | ThingPlug 포털을 통해 등록한 서비스명 | MQTT Topic 에 사용
 __SIMPLE_DEVICE_NAME__ | ThingPlug 포털을 통해 등록한 디바이스명 | MQTT Topic 에 사용
 
