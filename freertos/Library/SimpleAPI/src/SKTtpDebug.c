@@ -88,7 +88,7 @@ char* TimeToString(struct tm *t) {
 /*
  * DebugPrint
  */
-void SKTtpDebugPrintf(const char *filename, int lineno, LOG_LEVEL_E level, const char *format, ...)
+void SKTtpDebugPrintf(LOG_LEVEL_E level, const char *format, ...)
 {
     if(format == NULL) {
         return;
@@ -121,12 +121,12 @@ void SKTtpDebugPrintf(const char *filename, int lineno, LOG_LEVEL_E level, const
     timer = timer + get_npt_offset() + 32400;
     t = localtime(&timer);
 
-	fprintf(gSKTtpDebugStream, "[%s] [%s] [%d] [%s]: ", TimeToString(t), filename, lineno, stringBuffer);
+    fprintf(gSKTtpDebugStream, "[%s] [%s] : ", TimeToString(t), stringBuffer);
 
-	va_list argp;
-	va_start(argp, format);
-	vfprintf(gSKTtpDebugStream, format, argp);
-	va_end(argp);
-	fputs("\r\n", gSKTtpDebugStream);
-	fflush(gSKTtpDebugStream);
+    va_list argp;
+    va_start(argp, format);
+    vfprintf(gSKTtpDebugStream, format, argp);
+    va_end(argp);
+    fputs("\r\n", gSKTtpDebugStream);
+    fflush(gSKTtpDebugStream);
 }

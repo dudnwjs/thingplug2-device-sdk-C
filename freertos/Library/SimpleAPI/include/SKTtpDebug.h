@@ -31,10 +31,10 @@ typedef enum tagBooleanType {
 #ifdef DEBUG_ENABLE
 	#include <stdio.h>
 	extern void SKTtpDebugInit(BOOLEAN_TYPE_E enable, LOG_LEVEL_E level, FILE *stream);
-	extern void SKTtpDebugPrintf(const char *filename, int lineno, LOG_LEVEL_E level, const char *format, ...);
+	extern void SKTtpDebugPrintf(LOG_LEVEL_E level, const char *format, ...);
 
 	#define SKTDebugInit(enable, level, stream) SKTtpDebugInit(enable, level, stream)
-	#define SKTDebugPrint(level, ...)             SKTtpDebugPrintf(__FILE__, __LINE__, level, ## __VA_ARGS__)
+	#define SKTDebugPrint(level, ...)             SKTtpDebugPrintf(level, ## __VA_ARGS__)
 #else
 	#define SKTDebugInit(enable, level, stream)        ((void)0)
 	#define SKTDebugPrint(...)                           ((void)0)
