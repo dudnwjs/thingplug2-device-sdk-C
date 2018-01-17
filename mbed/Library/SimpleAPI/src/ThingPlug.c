@@ -42,7 +42,7 @@ int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc
  * @param[in] clientID The client identifier passed to the server when the client connects to it.
  * @return the return code of the connection response
  */
-int tpMQTTCreate(char* host, int port, int keepalive, char* userName, char* password,
+int tpSDKCreate(char* host, int port, int keepalive, char* userName, char* password,
         int enableServerCertAuth, char* subscribeTopic[], int subscribeTopicSize, char* publishTopic, char* clientID) {
     int rc = handleMQTTCreate(host, port, keepalive, userName, password, enableServerCertAuth,
         subscribeTopic, subscribeTopicSize, publishTopic, NULL, 1, clientID);
@@ -73,7 +73,7 @@ int tpMQTTDisconnect() {
 /**
  * @brief destroy
  */
-void tpMQTTDestroy() {
+void tpSDKDestroy() {
     handleMQTTDestroy();
 }
 

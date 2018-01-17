@@ -49,17 +49,15 @@ typedef void tpMQTTMessageArrivedCallback(char* topic, char* payload, int payloa
 int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc, tpMQTTDisconnectedCallback* dc, 
     tpMQTTConnectionLostCallback* clc, tpMQTTMessageDeliveredCallback* mdc, tpMQTTMessageArrivedCallback* mac);
 
-int tpMQTTCreate(char* host, int port, int keepalive, char* userName, char* password, int enableServerCertAuth, 
+int tpSDKCreate(char* host, int port, int keepalive, char* userName, char* password, int enableServerCertAuth, 
     char* subscribeTopic[], int subscribeTopicSize, char* publishTopic, char* clientID);
-
-int tpMQTTYield(unsigned long timeout_ms);
 
 int tpMQTTIsConnected(void);
 
 int tpMQTTDisconnect(void);
 
-void tpMQTTDestroy(void);
+void tpSDKDestroy();
 
+int tpMQTTYield(unsigned long timeout_ms);
 #endif //_THINGPLUG_H_
-
 

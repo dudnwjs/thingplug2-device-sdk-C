@@ -18,14 +18,15 @@
 #define RPC_REBOOT                  "tp_reboot"
 #define RPC_UPLOAD                  "tp_upload"
 #define RPC_DOWNLOAD                "tp_download"
-#define RPC_SOFTWARE_INSTALL        "tp_softwareInstall"
-#define RPC_SOFTWARE_REINSTALL      "tp_softwareReinstall"
-#define RPC_SOFTWARE_UNINSTALL      "tp_softwareUninstall"
-#define RPC_SOFTWARE_UPDATE         "tp_softwareUpdate"
-#define RPC_FIRMWARE_UPGRADE        "tp_firmwareUpgrade"
-#define RPC_CLOCK_SYNC              "tp_clockSync"
-#define RPC_SIGNAL_STATUS_REPORT    "tp_sygnalStatusReport"
+#define RPC_SOFTWARE_INSTALL        "tp_install"
+#define RPC_SOFTWARE_REINSTALL      "tp_reinstall"
+#define RPC_SOFTWARE_REUNINSTALL    "tp_reuninstall"
+#define RPC_SOFTWARE_UPDATE         "tp_update"
+#define RPC_FIRMWARE_UPGRADE        "tp_fwupgrade"
+#define RPC_CLOCK_SYNC              "tp_clocksync"
+#define RPC_SIGNAL_STATUS_REPORT    "tp_sigstatusreport"
 #define RPC_USER                    "tp_user"
+#define RPC_REMOTE                  "tp_remote"
 
 /*
  ****************************************
@@ -93,6 +94,7 @@
 #define SUCCESS                     "success"
 /** result fail(string) **/
 #define FAIL                        "fail"
+
 
 #define TOPIC_TELEMETRY             "v1/dev/%s/%s/telemetry"
 #define TOPIC_TELEMETRY_CSV         "v1/dev/%s/%s/telemetry/csv"

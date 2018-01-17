@@ -66,13 +66,11 @@ int tpSimpleAddData(char* data, unsigned char length) {
         gContent->data[gContent->len] = '\0';
         strncat(gContent->data, data, length);
     }
-
-    {
-        char str[64];
-        snprintf(str,64,"Content data : %s, length : %d", gContent->data, gContent->len);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
-
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "Content data : %s, length : %d", gContent->data, gContent->len);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "Content data : %s, length : %d", gContent->data, gContent->len);
+#endif
     return TP_SDK_SUCCESS;
 }
 
@@ -82,21 +80,20 @@ int tpSimpleAddData(char* data, unsigned char length) {
  * @param[in] useAddedData : use added data flag
  * @return int : result code
  */
-int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
+ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
     int rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/telemetry", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_TELEMETRY, mServiceID, mDeviceID);
 
     if(useAddedData) {
         if(!gContent || !gContent->data) return TP_SDK_INVALID_PARAMETER;
-
+        
         rc = handleMQTTPublishMessageWithTopic(topic, gContent->data);
-        {
-            char str[64];
-            snprintf(str,64,"tpSimpleTelemetry\r\ntopic : %s", topic);
-            SKTDebugPrint(LOG_LEVEL_INFO, str);
-            SKTDebugPrint(LOG_LEVEL_INFO, gContent->data);
-        }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleTelemetry\ntopic : %s\n%s", topic, gContent->data);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleTelemetry\ntopic : %s\n%s", topic, gContent->data);
+#endif
         if(gContent) {
             if(gContent->data) {
                 free(gContent->data);
@@ -112,7 +109,7 @@ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
 
         char* jsonData;
         cJSON* jsonObject = cJSON_CreateObject();
-
+    
         size = telemetry->total;
         for(i = 0; i < size; i++) {
             element = (telemetry->element + i);
@@ -121,12 +118,11 @@ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
         jsonData = cJSON_Print(jsonObject);
         cJSON_Delete(jsonObject);
 
-        {
-            char str[64];
-            snprintf(str,64,"tpSimpleTelemetry\r\ntopic : %s", topic);
-            SKTDebugPrint(LOG_LEVEL_INFO, str);
-            SKTDebugPrint(LOG_LEVEL_INFO, jsonData);
-        }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleTelemetry\ntopic : %s\n%s", topic, jsonData);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleTelemetry\ntopic : %s\n%s", topic, jsonData);
+#endif
         rc = handleMQTTPublishMessageWithTopic(topic, jsonData);
         if(jsonData) free(jsonData);
     }
@@ -138,17 +134,17 @@ int tpSimpleTelemetry(ArrayElement* telemetry, unsigned char useAddedData) {
  * @param[in] attribute : attributes
  * @return int : result code
  */
-int tpSimpleAttribute(ArrayElement* attribute) {
+ int tpSimpleAttribute(ArrayElement* attribute) {
     if(!attribute) return TP_SDK_INVALID_PARAMETER;
     int rc = TP_SDK_FAILURE;
     int i, size;
     char topic[SIZE_TOPIC] = "";
     Element* element;
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/attribute", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_ATTRIBUTE, mServiceID, mDeviceID);
 
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
-
+    
     size = attribute->total;
     for(i = 0; i < size; i++) {
         element = (attribute->element + i);
@@ -157,12 +153,11 @@ int tpSimpleAttribute(ArrayElement* attribute) {
     jsonData = cJSON_Print(jsonObject);
     cJSON_Delete(jsonObject);
 
-    {
-        char str[64];
-        snprintf(str, 64,"tpSimpleAttribute\r\ntopic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, jsonData);
-    }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleAttribute\ntopic : %s\n%s", topic,  jsonData);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleAttribute\ntopic : %s\n%s", topic,  jsonData);
+#endif
     rc = handleMQTTPublishMessageWithTopic(topic, jsonData);
     if(jsonData) free(jsonData);
     return rc;
@@ -177,7 +172,7 @@ int tpSimpleResult(RPCResponse* response) {
     if(!response) return TP_SDK_INVALID_PARAMETER;
     int i, size, rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_UP, mServiceID, mDeviceID);
 
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
@@ -191,7 +186,6 @@ int tpSimpleResult(RPCResponse* response) {
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, response->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, response->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, response->method);
     size = response->resultArray->total;
     for(i = 0; i < size; i++) {
         element = (response->resultArray->element + i);
@@ -206,13 +200,12 @@ int tpSimpleResult(RPCResponse* response) {
     jsonData = cJSON_Print(jsonObject);
     cJSON_Delete(jsonObject);
 
-    {
-        char str[64];
-        snprintf(str,64,"tpSimpleResult\ntopic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, jsonData);
-    }
-    rc = handleMQTTPublishMessageWithTopic(topic, jsonData);
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleResult\ntopic : %s\n%s", topic,  jsonData);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleResult\ntopic : %s\n%s", topic,  jsonData);
+#endif
+    rc = handleMQTTPublishMessageWithTopic(topic, jsonData);    
     if(jsonData) free(jsonData);
     return rc;
 }
@@ -226,13 +219,13 @@ int tpSimpleSubscribe(DeviceSubscribe* subscribe) {
     if(!subscribe) return TP_SDK_INVALID_PARAMETER;
     int rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_UP, mServiceID, mDeviceID);
 
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
     cJSON* attributeArray = cJSON_CreateStringArray(subscribe->attribute, subscribe->attribute_size);
     cJSON* telemetryArray = cJSON_CreateStringArray(subscribe->telemetry, subscribe->telemetry_size);
-
+    
     cJSON_AddStringToObject(jsonObject, CMD, subscribe->cmd);
     cJSON_AddNumberToObject(jsonObject, CMD_ID, subscribe->cmdId);
     cJSON_AddStringToObject(jsonObject, SERVICE_NAME, mServiceID);
@@ -247,16 +240,15 @@ int tpSimpleSubscribe(DeviceSubscribe* subscribe) {
     }
     cJSON_AddItemToObject(jsonObject, ATTRIBUTE, attributeArray);
     cJSON_AddItemToObject(jsonObject, TELEMETRY, telemetryArray);
-
+    
     jsonData = cJSON_Print(jsonObject);
     cJSON_Delete(jsonObject);
 
-    {
-        char str[64];
-        snprintf(str,64,"tpSimpleSubscribe\r\ntopic : %s", topic );
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, jsonData);
-    }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleSubscribe\ntopic : %s\n%s", topic,  jsonData);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleSubscribe\ntopic : %s\n%s", topic,  jsonData);
+#endif
     rc = handleMQTTPublishMessageWithTopic(topic, jsonData);
     if(jsonData) free(jsonData);
     return rc;
@@ -270,14 +262,14 @@ int tpSimpleSubscribe(DeviceSubscribe* subscribe) {
  * @return int : result code
  */
 int tpSimpleInitialize(char* serviceID, char* deviceID) {
-    if(!serviceID) return TP_SDK_FAILURE;
+    if(!serviceID || !deviceID) return TP_SDK_FAILURE;
     mServiceID = serviceID;
     mDeviceID = deviceID;
-    {
-        char str[128];
-        snprintf(str,128,"tpSimpleInitialize\r\nserviceID : %s, deviceID: %s", serviceID,  deviceID);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleInitialize\nserviceID : %s, deviceID: %s", serviceID,  deviceID);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleInitialize\nserviceID : %s, deviceID: %s", serviceID,  deviceID);
+#endif
     return TP_SDK_SUCCESS;
 }
 
@@ -307,12 +299,11 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format) {
             return TP_SDK_INVALID_PARAMETER;
     }
     snprintf(topic, SIZE_TOPIC, topicBase, mServiceID, mDeviceID);
-    {
-        char str[128];
-        snprintf(str,128,"tpSimpleRawTelemetry\r\ntopic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, telemetry);
-    }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleRawTelemetry\ntopic : %s\n%s", topic, telemetry);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleRawTelemetry\ntopic : %s\n%s", topic, telemetry);
+#endif    
     rc = handleMQTTPublishMessageWithTopic(topic, telemetry);
     return rc;
 }
@@ -343,55 +334,31 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format) {
             return TP_SDK_INVALID_PARAMETER;
     }    
     snprintf(topic, SIZE_TOPIC, topicBase, mServiceID, mDeviceID);    
-    {
-        char str[128];
-        snprintf(str,128,"tpSimpleRawAttribute\r\ntopic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, attribute);
-    }
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleRawAttribute\ntopic : %s\n%s", topic,  attribute);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleRawAttribute\ntopic : %s\n%s", topic,  attribute);
+#endif
     rc = handleMQTTPublishMessageWithTopic(topic, attribute);
     return rc;
 }
 
 /**
- * @brief send raw data to result
- * @param[in] response : control result response
+ * @brief send all raw data to result
+ * @param[in] result : control result 
  * @return int : result code
  */
- int tpSimpleRawResult(RPCResponse* response) {
-    if(!response) return TP_SDK_INVALID_PARAMETER;
+ int tpSimpleRawResult(char* result) {
+    if(!result) return TP_SDK_INVALID_PARAMETER;
     int rc = TP_SDK_FAILURE;
     char topic[SIZE_TOPIC] = "";
-    snprintf(topic, SIZE_TOPIC, "v1/dev/%s/%s/up", mServiceID, mDeviceID);
+    snprintf(topic, SIZE_TOPIC, TOPIC_UP, mServiceID, mDeviceID);
 
-    char* jsonData;
-    cJSON* jsonObject = cJSON_CreateObject();
-    cJSON* rpcRspObject = cJSON_CreateObject();
-    cJSON* resultObject;
-
-    cJSON_AddStringToObject(jsonObject, CMD, response->cmd);
-    cJSON_AddNumberToObject(jsonObject, CMD_ID, response->cmdId);
-    cJSON_AddStringToObject(jsonObject, RESULT, response->result);
-
-    cJSON_AddStringToObject(rpcRspObject, JSONRPC, response->jsonrpc);
-    cJSON_AddNumberToObject(rpcRspObject, ID, response->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, response->method);
-    resultObject = cJSON_CreateRaw(response->resultBody);
-    if(response->fail) {
-        cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);        
-    } else {
-        cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
-    }
-    cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
-    jsonData = cJSON_Print(jsonObject);
-    cJSON_Delete(jsonObject);
-    {
-        char str[128];
-        snprintf(str,128,"tpSimpleRawResult\r\ntopic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-        SKTDebugPrint(LOG_LEVEL_INFO, jsonData);
-    }
-    rc = handleMQTTPublishMessageWithTopic(topic, jsonData);
-    if(jsonData) free(jsonData);
+#ifdef SPT_DEBUG_ENABLE
+    SKTtpDebugLog(LOG_LEVEL_INFO, "tpSimpleRawResult\ntopic : %s\n%s", topic,  result);
+#else
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleRawResult\ntopic : %s\n%s", topic,  result);
+#endif
+    rc = handleMQTTPublishMessageWithTopic(topic, result);
     return rc;
 }
