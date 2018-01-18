@@ -15,7 +15,6 @@
 #include <unistd.h>
 
 #include "SMA.h"
-#include <StreamWrapper.h>
 
 #ifdef USE_LCD
 #include "rgb_lcd.h"

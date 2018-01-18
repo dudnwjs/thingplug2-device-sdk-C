@@ -9,15 +9,15 @@
 #ifndef _SIMPLE_H_
 #define _SIMPLE_H_
 
-#include "include/Define.h"
-#include "include/cJSON.h"
+#include "Define.h"
+#include "cJSON.h"
 
 /*
  ****************************************
  * Enumerations
  ****************************************
  */
- typedef enum data_type {
+typedef enum data_type {
     JSON_TYPE_STRING = 0,     // char pointer
     JSON_TYPE_RAW,            // deal with words numerically
     JSON_TYPE_LONG,           // int, long type
@@ -67,8 +67,6 @@ typedef enum data_format {
      char* jsonrpc;
      /** request ID from server(int) **/
      int id;
-     /** method(string) **/
-     char* method;
      /** control result(string) **/
      char* result;
      /** fail flag - if 0 SUCCESS(unsigned char) **/
@@ -118,5 +116,5 @@ int tpSimpleRawTelemetry(char* telemetry, DATA_FORMAT format);
 
 int tpSimpleRawAttribute(char* attribute, DATA_FORMAT format);
 
-int tpSimpleRawResult(RPCResponse* response);
+int tpSimpleRawResult(char* result);
 #endif

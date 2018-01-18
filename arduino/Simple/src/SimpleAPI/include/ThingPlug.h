@@ -1,20 +1,14 @@
-
 /**
- * @file oneM2M.h
+ * @file ThingPlug.h
  *
- * @brief oneM2M API header
+ * @brief ThingPlug API header
  *
  * Copyright (C) 2016. SK Telecom, All Rights Reserved.
  * Written 2016, by SK Telecom
  */
 
-#ifndef _oneM2M_H_
-#define _oneM2M_H_
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#ifndef _THINGPLUG_H_
+#define _THINGPLUG_H_
 
 /*
  ****************************************
@@ -29,6 +23,9 @@ extern "C" {
  ****************************************
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  ****************************************
@@ -52,10 +49,10 @@ typedef void tpMQTTMessageArrivedCallback(char* topic, char* payload, int payloa
  * Major Function
  ****************************************
  */
-int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc, tpMQTTDisconnectedCallback* dc,
+int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc, tpMQTTDisconnectedCallback* dc, 
     tpMQTTConnectionLostCallback* clc, tpMQTTMessageDeliveredCallback* mdc, tpMQTTMessageArrivedCallback* mac);
 
-int tpMQTTCreate(char* host, int port, int keepalive, char* userName, char* password, int enableServerCertAuth,
+int tpSDKCreate(char* host, int port, int keepalive, char* userName, char* password, int enableServerCertAuth, 
     char* subscribeTopic[], int subscribeTopicSize, char* publishTopic, char* clientID);
 
 int tpMQTTIsConnected();
@@ -64,12 +61,11 @@ int tpMQTTYield(unsigned long timeout_ms);
 
 int tpMQTTDisconnect();
 
-void tpMQTTDestory();
-
+void tpSDKDestroy();
 
 #ifdef __cplusplus
 }
 #endif
 
+#endif //_THINGPLUG_H_
 
-#endif //_oneM2M_H_

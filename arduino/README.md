@@ -53,14 +53,14 @@ MQTT broker 와의 연결을 위한 정보 및 디바이스 정보를 설정해�
 #define MQTT_HOST                           ""
 #define MQTT_PORT                           1883					
 #define MQTT_KEEP_ALIVE                     120
-#define LOGIN_NAME                          ""
+#define SIMPLE_DEVICE_TOKEN                 ""
 #define SIMPLE_SERVICE_NAME                 ""
 #define SIMPLE_DEVICE_NAME                  ""
 ```
 
 변수 | 값 | 용도 
 ------------ | ------------- | -------------
-__LOGIN_NAME__ | ThingPlug 포털을 통해 발급받은 디바이스 토큰 | MQTT 로그인 사용자명으로 사용
+__SIMPLE_DEVICE_TOKEN__ | ThingPlug 포털을 통해 발급받은 디바이스 토큰 | MQTT 로그인 사용자명으로 사용
 __SIMPLE_SERVICE_NAME__ | ThingPlug 포털을 통해 등록한 서비스명 | MQTT Topic 에 사용
 __SIMPLE_DEVICE_NAME__ | ThingPlug 포털을 통해 등록한 디바이스명 | MQTT Topic 에 사용
 
@@ -128,16 +128,14 @@ Arduino SimpleAPI example 실행하기
 1. 라이브러리 추가하기 (windows)
 
 	```
-	C:\Users\{$USER}\Documents\Arduino\libraries에 Simple 폴더 및 Time 폴더를 복사한다.
+	C:\Users\{$USER}\Documents\Arduino\libraries에 Time 폴더를 복사한다.
 	```
 	
-2. 라이브러리 예제 실행하기 (주의 : IDE 재부팅 필수)
+2. 라이브러리 예제 실행하기 
 
 	```
-	Arduino IDE 실행
-	Menu File tab->example(예제)->SimpleSDK->middleware
+	Simple 폴더 Simple.ino 실행
 	```
-	![arduino_ide_01.png](../images/arduino_ide_01.png)
 	
 3. 컴파일 및 실행 
 
@@ -153,7 +151,7 @@ ThingPlug_Simple_SDK 실행
 ---
 1. 실행 로그 확인
 ---
-![LOG_Arduino.txt](./LOG_Arduino.txt)
+[LOG_Arduino.txt](./LOG_Arduino.txt)
 ---
 2. Thingplug SensorData
 ---

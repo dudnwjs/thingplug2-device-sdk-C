@@ -1,22 +1,16 @@
 /**
- * @file oneM2M.c
+ * @file ThingPlug.c
  *
- * @brief oneM2M API
+ * @brief ThingPlug API
  *
- * Copyright (C) 2016. SK Telecom, All Rights Reserved.
- * Written 2016, by SK Telecom
+ * Copyright (C) 2017. SK Telecom, All Rights Reserved.
+ * Written 2017, by SK Telecom
  */
 #include <stdio.h>
 #include <stddef.h>
 
-#include "include/ThingPlug.h"
-#include "include/MQTTHandler.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
+#include "../include/ThingPlug.h"
+#include "../include/MQTTHandler.h"
 
 /**
  * @brief set callback function
@@ -28,7 +22,7 @@ extern "C" {
  * @param[in] mac message arrived callback
  * @return the return code of the set callbacks result
  */
-int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc, tpMQTTDisconnectedCallback* dc,
+int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc, tpMQTTDisconnectedCallback* dc, 
         tpMQTTConnectionLostCallback* clc, tpMQTTMessageDeliveredCallback* mdc, tpMQTTMessageArrivedCallback* mac) {
     int rc = handleMQTTSetCallbacks(cc, sc, dc, clc, mdc, mac);
     return rc;
@@ -38,7 +32,7 @@ int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc
  * @brief create mqtt
  * @param[in] host the hostname or ip address of the broker to connect to.
  * @param[in] port the network port to connect to.  Usually 1883.
- * @param[in] keepalive the number of seconds after which the broker should send a PING message to the client if no other messages have been exchanged in that time.
+ * @param[in] keepalive the number of seconds after which the broker should send a PING message to the client if no other messages have been exchanged in that time. 
  * @param[in] userName authentication user name
  * @param[in] password authentication password
  * @param[in] enableServerCertAuth True/False option to enable verification of the server certificate
@@ -48,7 +42,7 @@ int tpMQTTSetCallbacks(tpMQTTConnectedCallback* cc, tpMQTTSubscribedCallback* sc
  * @param[in] clientID The client identifier passed to the server when the client connects to it.
  * @return the return code of the connection response
  */
-int tpMQTTCreate(char* host, int port, int keepalive, char* userName, char* password,
+int tpSDKCreate(char* host, int port, int keepalive, char* userName, char* password,
         int enableServerCertAuth, char* subscribeTopic[], int subscribeTopicSize, char* publishTopic, char* clientID) {
     int rc = handleMQTTCreate(host, port, keepalive, userName, password, enableServerCertAuth,
         subscribeTopic, subscribeTopicSize, publishTopic, NULL, 1, clientID);
@@ -84,10 +78,8 @@ int tpMQTTDisconnect() {
 /**
  * @brief destroy
  */
-void tpMQTTDestory() {
+void tpSDKDestroy() {
     handleMQTTDestroy();
 }
 
-#ifdef __cplusplus
-}
-#endif
+ 

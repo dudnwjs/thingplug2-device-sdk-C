@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int MARun(char* ip, char* gw);
+int MARun();
 
 #ifdef __cplusplus
 }

@@ -9,17 +9,16 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
-#include "MQTT/IPStack.h"
-#include "MQTT/Countdown.h"
-#include "MQTT/MQTTClient.h"
-#include "include/MQTTHandler.h"
+#include <string.h>
+#include "../../../MQTT/IPStack.h"
+#include "../../../MQTT/Countdown.h"
+#include "../../../MQTT/MQTTClient.h"
+#include "../../include/MQTTHandler.h"
+#include "../../include/SKTtpDebug.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <string.h>
-#include "../include/SKTtpDebug.h"
 
 #define MQTT_MESSAGE_HANDLER_MAX_NUM	2
 #define MQTT_PACKET_SIZE				1024

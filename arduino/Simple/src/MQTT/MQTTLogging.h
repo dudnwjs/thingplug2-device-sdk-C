@@ -17,7 +17,7 @@
 #if !defined(MQTT_LOGGING_H)
 #define MQTT_LOGGING_H
 
-#include "StreamWrapper.h"
+#include "../StreamWrapper.h"
 
 /*
 #ifndef MQTT_DEBUG

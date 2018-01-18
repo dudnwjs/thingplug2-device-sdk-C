@@ -10,7 +10,12 @@
 #ifndef _LOG_PRINT_H_
 #define _LOG_PRINT_H_
 
-#include "StreamWrapper.h"
+#include "../../StreamWrapper.h"
+#include <stdarg.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum tagLogLevel {
 	SKT_LOG_LEVEL_NONE =0,
@@ -32,13 +37,17 @@ typedef enum tagBooleanType {
 #ifdef DEBUG_ENABLE
 	#include <stdio.h>
 extern void SKTtpDebugInit(BOOLEAN_TYPE_E enable, LOG_LEVEL_E level);
-extern void SKTtpDebugPrintf( LOG_LEVEL_E level, char *str);
+extern void SKTtpDebugPrintf(LOG_LEVEL_E level, const char *format, ...);
 
 #define SKTDebugInit(enable, level) SKTtpDebugInit(enable, level)
-#define SKTDebugPrint             SKTtpDebugPrintf
+#define SKTDebugPrint(level, ...)             SKTtpDebugPrintf(level, ## __VA_ARGS__)
 #else
 	#define SKTDebugInit(enable, level, stream)        ((void)0)
 	#define SKTDebugPrint(...)                           ((void)0)
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* _LOG_PRINT_H_ */

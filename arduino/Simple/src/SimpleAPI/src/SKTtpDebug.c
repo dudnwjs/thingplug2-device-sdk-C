@@ -7,14 +7,15 @@
  * Written 2017, by SK Telecom
  */
 
+#include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "include/SKTtpDebug.h"
-#include "include/SKTtpDebug.h"
-#include "StreamWrapper.h"
+#include "../include/SKTtpDebug.h"
+#include "../include/SKTtpDebug.h"
+#include "../../StreamWrapper.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,6 +27,9 @@ extern int getSecond();
 extern int getYear();
 extern int getMonth();
 extern int getDay();
+#ifdef __cplusplus
+}
+#endif
 
 BOOLEAN_TYPE_E  gSKTtpDebugEnable   = False;
 LOG_LEVEL_E     gSKTtpDebugLogLevel = (LOG_LEVEL_E)SKT_LOG_LEVEL_NONE;
@@ -76,7 +80,6 @@ void SKTtpDebugInit(BOOLEAN_TYPE_E enable, LOG_LEVEL_E level)
     gSKTtpDebugLogLevel = level;
 }
 
-
 /*
  * TimeToString
  */
@@ -95,7 +98,7 @@ char* TimeToString(void) {
 /*
  * DebugPrint
  */
-void SKTtpDebugPrintf(LOG_LEVEL_E level, char* str)
+void SKTtpDebugPrintf(LOG_LEVEL_E level, const char *format, ...)
 {
     if(gSKTtpDebugEnable == False ) {
         return;
@@ -115,12 +118,12 @@ void SKTtpDebugPrintf(LOG_LEVEL_E level, char* str)
     SKTtpDebugLogLevelString(level, stringBuffer);
 
     char buffer[2048];
-    sprintf(buffer, "[%s] [%s]: %s", TimeToString(), stringBuffer, str);
+    sprintf(buffer, "[%s] [%s]: ", TimeToString(), stringBuffer);
     Stream_print_str(NULL, buffer);
-	
+    va_list argp;
+    va_start(argp, format);
+    vsprintf(buffer, format, argp);
+    va_end(argp);
+    Stream_print_str(NULL, buffer);
 }
-
-#ifdef __cplusplus
-}
-#endif
 
