@@ -272,6 +272,7 @@ long long current_timestamp() {
 char *sensor_list[] = { "temp1", "humi1", "light1" };
 
 static int telemetry() {
+    int rc;
     mStep = PROCESS_TELEMETRY;
 #ifdef JSON_FORMAT
     char *temp, *humi, *light;
@@ -313,7 +314,7 @@ static int telemetry() {
     item->value = (void *)&time;
     arrayElement->total++;
 
-    int rc = tpSimpleTelemetry(arrayElement, 0);
+    rc = tpSimpleTelemetry(arrayElement, 0);
     free(arrayElement->element);
     free(arrayElement);
     free(temp);
@@ -509,7 +510,6 @@ static char* make_response(RPCResponse *rsp) {
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, rsp->method);
     resultObject = cJSON_CreateRaw(rsp->resultBody);
     if(rsp->fail) {
         cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
