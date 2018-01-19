@@ -143,9 +143,20 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
     if(!root) return;
 
     cJSON* rpcReqObject = cJSON_GetObjectItemCaseSensitive(root, "rpcReq");
+    cJSON* errorObject = cJSON_GetObjectItemCaseSensitive(root, "errorCode");
+    // error
+    if(errorObject) {
+        int errorCode = errorObject->valueint;
+        set_error(errorCode);
+
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPERR=1");
+        char* ret = get_error();
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "result : %s", ret);
+        free(ret);
+    } 
     // if RPC control
-    if(rpcReqObject) {
-        int control, rc = -1;
+    else if(rpcReqObject) {
+        int control, rc = 0;
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
         cJSON* modeObject = cJSON_GetObjectItemCaseSensitive(root, "rpcMode");
         cJSON* rpcObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "jsonrpc");
@@ -162,6 +173,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         if(!cmd || !mode || !method) return;
         unsigned char isTwoWay = 0;
         if(strncmp(mode, "twoway", strlen("twoway")) == 0) isTwoWay = 1;
+        char* params = cJSON_PrintUnformatted(paramsObject);
 
         // Reserved Procedure for ThingPlug
         if(strncmp(method, RPC_RESET, strlen(RPC_RESET)) == 0) {
@@ -200,16 +212,10 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
             // ATCOM INITIATED
-            char* params = cJSON_PrintUnformatted(paramsObject);
             SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
-            free(params);
             
             // DO FIRMWARE UPGRADE here...
 
-            // ATCOM FINISHED
-            if(isTwoWay) {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
-            }
         } else if(strncmp(method, RPC_CLOCK_SYNC, strlen(RPC_CLOCK_SYNC)) == 0) {
             // TODO CLOCK SYNC
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_CLOCK_SYNC");
@@ -222,28 +228,19 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO REPORT
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_REMOTE");
             // ATCOM INITIATED
-            char* params = cJSON_PrintUnformatted(paramsObject);
             SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
-            free(params);
 
             // DO REMOTE here...
 
-            // ATCOM FINISHED
-            if(isTwoWay) {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
-            }
         } else if(strncmp(method, RPC_USER, strlen(RPC_USER)) == 0) {
             // USER
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_USER");
             // ATCOM INITIATED
-            char* params = cJSON_PrintUnformatted(paramsObject);
             if(isTwoWay) {
                 SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
             } else {
                 SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3,%s", method, id, params);
             }
-            free(params);
-            
             if(!paramsObject) return;
             cJSON* paramObject = cJSON_GetArrayItem(paramsObject, 0);
             controlObject = cJSON_GetObjectItemCaseSensitive(paramObject, "act7colorLed");
@@ -251,7 +248,13 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             control = controlObject->valueint;
             SKTDebugPrint(LOG_LEVEL_INFO, "\nrpc : %s,\nid : %d,\ncmd : %d", rpc, id, control);
             rc = RGB_LEDControl(control);
-
+        } else {
+            if(params) free(params);
+            SKTDebugPrint(LOG_LEVEL_ERROR, "not supported method : %s", method);
+            return;
+        }
+        if(params) free(params);
+        if(isTwoWay) {
             char *rpcRsp;
             char body[128] = "";
             RPCResponse rsp;
@@ -262,14 +265,12 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             rsp.id = id;
             rsp.fail = rc;
             // control success
-            if(rc == 0) {            
-                snprintf(body, sizeof(body), "{\"%s\":%d}", controlObject->string, control);
+            if(rc == 0) {
+                snprintf(body, sizeof(body), "{\"%s\":\"%s\"}", "message", "success");
                 rsp.resultBody = body;
                 rsp.result = "success";
                 rpcRsp = make_response(&rsp);
-                if(isTwoWay) {
-                    SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, body);
-                }
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, body);
             }
             // control fail
             else {
@@ -277,19 +278,14 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
                 rsp.resultBody = body;
                 rsp.result = "fail";
                 rpcRsp = make_response(&rsp);
-                if(isTwoWay) {
-                    SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,1,%s", id, body);
-                }
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,1,%s", id, body);
             }
             int error = tpSimpleRawResult(rpcRsp);
             set_error(error);
             free(rpcRsp);
             SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
-
             // ATCOM FINISHED
-            if(isTwoWay) {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
-            }
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
         }
     } else {
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
