@@ -12,6 +12,7 @@
 #include "NTPClient/NTPClient.h"
 #include "sf_comms_api.h"
 #include <string.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -89,7 +90,7 @@ char* TimeToString(struct tm *t) {
 /*
  * DebugPrint
  */
-void SKTtpDebugPrintf(LOG_LEVEL_E level, char* str)
+void SKTtpDebugPrintf(LOG_LEVEL_E level, const char *format, ...)    
 {
     if(gSKTtpDebugEnable == False ) {
         return;
@@ -117,9 +118,16 @@ void SKTtpDebugPrintf(LOG_LEVEL_E level, char* str)
     t = localtime(&timer);
 
     char buffer[2048];
-    snprintf(buffer,2048, "[%s] [%s]: %s\r\n", TimeToString(t), stringBuffer, str);
+    snprintf(buffer,2048, "[%s] [%s]: ", TimeToString(t), stringBuffer);
     if(!gStopConsole){
         g_sf_comms0.p_api->write(g_sf_comms0.p_ctrl, buffer,  strlen(buffer) ,TX_NO_WAIT);
+        memset(buffer,0,2048);
+        va_list argp;
+        va_start(argp, format);
+        vsprintf(buffer, format, argp);
+        va_end(argp);
+        g_sf_comms0.p_api->write(g_sf_comms0.p_ctrl, buffer,  strlen(buffer) ,TX_NO_WAIT);
+        g_sf_comms0.p_api->write(g_sf_comms0.p_ctrl, "\r\n",  strlen("\r\n") ,TX_NO_WAIT);
     }
 }
 

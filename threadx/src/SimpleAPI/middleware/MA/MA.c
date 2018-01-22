@@ -73,47 +73,29 @@ static char* get_error();
 static void set_error(int errorCode);
 
 void MQTTConnected(int result) {
-    {
-        char str[64];
-        snprintf(str,64,"MQTTConnected result : %d", result);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
-
+    SKTDebugPrint(LOG_LEVEL_INFO, "MQTTConnected result : %d", result);
     // if connection failed
     if(result) {
         mConnectionStatus = DISCONNECTED;
     } else {
         mConnectionStatus = CONNECTED;
     }
-    {
-        char str[64];
-        snprintf(str,64,"CONNECTION_STATUS : %d", mConnectionStatus);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "CONNECTION_STATUS : %d", mConnectionStatus);
+    set_error(result);
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCON=%d", result);
 }
 
 void MQTTSubscribed(int result) {
-    {
-        char str[64];
-        snprintf(str,64,"MQTTSubscribed result : %d", result);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "MQTTSubscribed result : %d", result);
+
     if(result == 0) {
         char data[SIZE_PAYLOAD] = "";
         make_attribute(data);
 #ifdef JSON_FORMAT
-        {
-            char str[64];
-            snprintf(str,64,"AT+SKTPDAT=1,attribute,0,%s", data);
-            SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-        }
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPDAT=1,attribute,0,%s", data);
         send_data(ATTRIBUTE_TYPE, FORMAT_JSON, data);
 #elif defined(CSV_FORMAT)
-        {
-            char str[64];
-            snprintf(str,64,"AT+SKTPDAT=1,attribute,1,%s", data);
-            SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-        }
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPDAT=1,attribute,1,%s", data);
         send_data(ATTRIBUTE_TYPE, FORMAT_CSV, data);
 #endif
         mStep = PROCESS_TELEMETRY;
@@ -121,55 +103,54 @@ void MQTTSubscribed(int result) {
 }
 
 void MQTTDisconnected(int result) {
-    {
-        char str[64];
-        snprintf(str,64,"MQTTDisconnected result : %d", result);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
+    SKTDebugPrint(LOG_LEVEL_INFO, "MQTTDisconnected result : %d", result);
+    if(result == 0) {
+        set_error(-1);
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCON=-1");
+    } else {
+        set_error(0);
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCON=0");
     }
-
 }
 
 void MQTTConnectionLost(char* cause) {
-    {
-        char str[64];
-        snprintf(str,64,"MQTTConnectionLost result : %s", cause);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "MQTTConnectionLost result : %s", cause);
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCON=-1");
     mConnectionStatus = DISCONNECTED;
 }
 
 void MQTTMessageDelivered(int token) {
-    {
-        char str[128];
-        snprintf(str,64,"MQTTMessageDelivered token : %d, step : %d", token, mStep);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "MQTTMessageDelivered token : %d, step : %d", token, mStep);
 }
 
 void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
-    {
-        char str[64];
-        snprintf(str,64,"MQTTMessageArrived topic : %s", topic);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "MQTTMessageArrived topic : %s, step : %d", topic, mStep);
 
-    if(msg == NULL || msgLen < 1) {
-        return;
+	if(msg == NULL || msgLen < 1) {
+		return;
     }
     char payload[SIZE_PAYLOAD] = "";
     memcpy(payload, msg, msgLen);
-    {
-        SKTDebugPrint(LOG_LEVEL_INFO, "paylaod->");
-        SKTDebugPrint(LOG_LEVEL_INFO, payload);
-    }
-
+    SKTDebugPrint(LOG_LEVEL_INFO, "payload : %s", payload);
+    
     cJSON* root = cJSON_Parse(payload);
     if(!root) return;
 
     cJSON* rpcReqObject = cJSON_GetObjectItemCaseSensitive(root, "rpcReq");
+    cJSON* errorObject = cJSON_GetObjectItemCaseSensitive(root, "errorCode");
+    // error
+    if(errorObject) {
+        int errorCode = errorObject->valueint;
+        set_error(errorCode);
+
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPERR=1");
+        char* ret = get_error();
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "result : %s", ret);
+        free(ret);
+    } 
     // if RPC control
-    if(rpcReqObject) {
-        int control, rc = -1;
+    else if(rpcReqObject) {
+        int control, rc = 0;
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
         cJSON* modeObject = cJSON_GetObjectItemCaseSensitive(root, "rpcMode");
         cJSON* rpcObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "jsonrpc");
@@ -186,6 +167,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         if(!cmd || !mode || !method) return;
         unsigned char isTwoWay = 0;
         if(strncmp(mode, "twoway", strlen("twoway")) == 0) isTwoWay = 1;
+        char* params = cJSON_PrintUnformatted(paramsObject);
 
         // Reserved Procedure for ThingPlug
         if(strncmp(method, RPC_RESET, strlen(RPC_RESET)) == 0) {
@@ -224,25 +206,10 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
             // ATCOM INITIATED
-            char* params = cJSON_PrintUnformatted(paramsObject);
-            {
-                char str[512];
-                snprintf(str,512,"+SKTPCMD=%s,%d,1,%s", method, id, params);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-            }
-
-            free(params);
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
             
             // DO FIRMWARE UPGRADE here...
 
-            // ATCOM FINISHED
-            if(isTwoWay) {
-                {
-                    char str[512];
-                    snprintf(str,512,"+SKTPCMD=%s,%d,3", method, id);
-                    SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-                }
-            }
         } else if(strncmp(method, RPC_CLOCK_SYNC, strlen(RPC_CLOCK_SYNC)) == 0) {
             // TODO CLOCK SYNC
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_CLOCK_SYNC");
@@ -255,48 +222,33 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO REPORT
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_REMOTE");
             // ATCOM INITIATED
-            char* params = cJSON_PrintUnformatted(paramsObject);
-            {
-                char str[128];
-                snprintf(str,128,"+SKTPCMD=%s,%d,1,%s", method, id, params);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-            }
-            free(params);
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
 
             // DO REMOTE here...
 
-            // ATCOM FINISHED
-            if(isTwoWay) {
-                {
-                    char str[128];
-                    snprintf(str,128,"+SKTPCMD=%s,%d,3", method, id);
-                    SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-                }
-            }
         } else if(strncmp(method, RPC_USER, strlen(RPC_USER)) == 0) {
             // USER
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_USER");
             // ATCOM INITIATED
-            char* params = cJSON_PrintUnformatted(paramsObject);
-            {
-                char str[128];
-                snprintf(str,128,"+SKTPCMD=%s,%d,1,%s", method, id, params);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, str);
+            if(isTwoWay) {
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
+            } else {
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3,%s", method, id, params);
             }
-            free(params);
-            
             if(!paramsObject) return;
             cJSON* paramObject = cJSON_GetArrayItem(paramsObject, 0);
             controlObject = cJSON_GetObjectItemCaseSensitive(paramObject, "act7colorLed");
             if(!controlObject) return;
             control = controlObject->valueint;
-            {
-                char str[128];
-                snprintf(str,128,"\r\nrpc : %s,\r\nid : %d,\r\ncmd : %d", rpc, id, control);
-                SKTDebugPrint(LOG_LEVEL_INFO, str);
-            }
+            SKTDebugPrint(LOG_LEVEL_INFO, "\nrpc : %s,\nid : %d,\ncmd : %d", rpc, id, control);
             rc = RGB_LEDControl(control);
-        // control success
+        } else {
+            if(params) free(params);
+            SKTDebugPrint(LOG_LEVEL_ERROR, "not supported method : %s", method);
+            return;
+        }
+        if(params) free(params);
+        if(isTwoWay) {
             char *rpcRsp;
             char body[128] = "";
             RPCResponse rsp;
@@ -305,22 +257,14 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             rsp.cmdId = 1;
             rsp.jsonrpc = rpc;
             rsp.id = id;
-            rsp.method = method;
             rsp.fail = rc;
             // control success
-            if(rc == 0) {            
-                snprintf(body, sizeof(body), "{\"%s\":%d}", controlObject->string, control);
+            if(rc == 0) {
+                snprintf(body, sizeof(body), "{\"%s\":\"%s\"}", "message", "success");
                 rsp.resultBody = body;
                 rsp.result = "success";
                 rpcRsp = make_response(&rsp);
-                if(isTwoWay) {
-                    {
-                        char str[128];
-                        snprintf(str,128,"AT+SKTPRES=1,%d,0,%s", id, body);
-                        SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-                    }
-
-                }
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, body);
             }
             // control fail
             else {
@@ -328,26 +272,14 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
                 rsp.resultBody = body;
                 rsp.result = "fail";
                 rpcRsp = make_response(&rsp);
-                if(isTwoWay) {
-                    {
-                        char str[128];
-                        snprintf(str,128,"AT+SKTPRES=1,%d,1,%s", id, body);
-                        SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-                    }
-                }
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,1,%s", id, body);
             }
             int error = tpSimpleRawResult(rpcRsp);
             set_error(error);
-            free(rpcRsp);            
-
+            free(rpcRsp);
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
             // ATCOM FINISHED
-            if(isTwoWay) {
-                {
-                    char str[128];
-                    snprintf(str,128,"+SKTPCMD=%s,%d,3", method, id);
-                    SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-                }
-            }
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
         }
     } else {
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
@@ -358,16 +290,17 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         if(!cmd) return;
         // if attribute control
         if(strncmp(cmd, "setAttribute", strlen("setAttribute")) == 0) {
-            cJSON* attribute = cJSON_GetObjectItemCaseSensitive(root, "attribute");
-            if(!attribute) return;
-            cJSON* act7colorLedObject = cJSON_GetObjectItemCaseSensitive(attribute, "act7colorLed");
+            cJSON* attributeObject = cJSON_GetObjectItemCaseSensitive(root, "attribute");
+            if(!attributeObject) return;
+            char* attribute = cJSON_PrintUnformatted(attributeObject);
+            // ATCOM INITIATED
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=set_attr,%d,3,%s", cmdId, attribute);
+            free(attribute);
+
+            cJSON* act7colorLedObject = cJSON_GetObjectItemCaseSensitive(attributeObject, "act7colorLed");
             if(!act7colorLedObject) return;
             int act7colorLed = act7colorLedObject->valueint;
-            {
-                char str[128];
-                snprintf(str,128,"act7colorLed : %d, %d", act7colorLed, cmdId);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-            }
+            SKTDebugPrint(LOG_LEVEL_INFO, "act7colorLed : %d, %d", act7colorLed, cmdId);
             int rc = RGB_LEDControl(act7colorLed);
             if(rc != 0) {
                 act7colorLed = RGB_LEDStatus();
@@ -381,11 +314,11 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             item->name = "act7colorLed";
             item->value = &act7colorLed;
             arrayElement->total++;
-            tpSimpleAttribute(arrayElement);
+            int error = tpSimpleAttribute(arrayElement);
+            set_error(error);
             free(arrayElement->element);
             free(arrayElement);
-#endif
-#ifdef CSV_FORMAT
+#elif defined(CSV_FORMAT)
             char csvAttr[256] = "";
             snprintf(csvAttr, sizeof(csvAttr), ",,,,,,,,,,%d", act7colorLed);
             int error = tpSimpleRawAttribute(csvAttr, FORMAT_CSV);
@@ -414,7 +347,6 @@ static char* make_response(RPCResponse *rsp) {
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
-    cJSON_AddStringToObject(rpcRspObject, METHOD, rsp->method);
     resultObject = cJSON_CreateRaw(rsp->resultBody);
     if(rsp->fail) {
         cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
@@ -452,8 +384,7 @@ static void make_telemetry(char *data) {
     snprintf(sensorInfo, sizeof(sensorInfo), "\"%s\":%s", sensor_list[2], light);
     strncat(data, sensorInfo, strlen(sensorInfo));
     strncat(data, "}", strlen("}"));
-#endif
-#ifdef CSV_FORMAT
+#elif defined(CSV_FORMAT)
     SRAConvertCSVData( data, time);
     SRAConvertCSVData( data, temp);
     SRAConvertCSVData( data, humi);
@@ -477,6 +408,7 @@ static void send_data(THINGPLUG_DATA_TYPE tpDataType, DATA_FORMAT format, char *
             break;
     }
     set_error(rc);
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
 }
 
 static unsigned long getAvailableMemory() {
@@ -535,7 +467,7 @@ static void make_attribute(char* data) {
     snprintf(attrInfo, sizeof(attrInfo), "\"sysThingPlugIpAddress\":\"%s\",", MQTT_HOST);
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
-    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLatitude\":%s,","37.380257" );
+    snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLatitude\":%s,", "37.380257");
     strncat(data, attrInfo, strlen(attrInfo));
     memset(attrInfo, 0, sizeof(attrInfo));
     snprintf(attrInfo, sizeof(attrInfo), "\"sysLocationLongitude\":%s,", "127.115479");
@@ -544,8 +476,7 @@ static void make_attribute(char* data) {
     snprintf(attrInfo, sizeof(attrInfo), "\"act7colorLed\":%s", "0");
     strncat(data, attrInfo, strlen(attrInfo));
     strncat(data, "}", strlen("}"));
-#endif
-#ifdef CSV_FORMAT
+#elif defined(CSV_FORMAT)
     // Memory
     SRAConvertCSVData(data, availableMemory);
     // SW Version
@@ -563,9 +494,9 @@ static void make_attribute(char* data) {
     // ServerIPAddr
     SRAConvertCSVData(data, MQTT_HOST); 
     // Latitude
-    SRAConvertCSVData(data, "35.1689766"); 
+    SRAConvertCSVData(data, "37.380257"); 
     // Longitude
-    SRAConvertCSVData(data, "129.1338524"); 
+    SRAConvertCSVData(data, "127.115479"); 
     // Led    
     SRAConvertCSVData(data, "0");
 #endif
@@ -582,7 +513,6 @@ static void set_error(int errorCode) {
     mErrorCode = errorCode;
 }
 
-
 /**
  * @brief get Device MAC Address without Colon.
  * @return mac address
@@ -592,7 +522,8 @@ char* GetMacAddressWithoutColon() {
 }
 
 
-int start() {
+void start() {
+    tpSDKDestroy();
     int rc;
 
     mConnectionStatus = CONNECTING;
@@ -601,29 +532,18 @@ int start() {
 
     // set callbacks
     rc = tpMQTTSetCallbacks(MQTTConnected, MQTTSubscribed, MQTTDisconnected, MQTTConnectionLost, MQTTMessageDelivered, MQTTMessageArrived);
-    {
-        char str[64];
-        snprintf(str,64,"tpMQTTSetCallbacks result : %d", rc);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpMQTTSetCallbacks result : %d", rc);
     // Simple SDK initialize
     rc = tpSimpleInitialize(SIMPLE_SERVICE_NAME, SIMPLE_DEVICE_NAME);
-    {
-        char str[64];
-        snprintf(str,64,"tpSimpleInitialize : %d", rc);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSimpleInitialize : %d", rc);
     // create clientID - MAC address
-    char* clientID = GetMacAddressWithoutColon();
-    memcpy(mClientID, clientID, strlen(clientID));
-    free(clientID);
-    {
-        char str[64];
-        snprintf(str,64,"client id : %s", mClientID);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
+    char* macAddress = GetMacAddressWithoutColon();
+    snprintf(mClientID, sizeof(mClientID), MQTT_CLIENT_ID, SIMPLE_DEVICE_NAME, macAddress);
+    free(macAddress);
+    SKTDebugPrint(LOG_LEVEL_INFO, "client id : %s", mClientID);
     // create Topics
-    snprintf(mTopicControlDown, SIZE_TOPIC, MQTT_TOPIC_CONTROL_DOWN, SIMPLE_SERVICE_NAME, SIMPLE_DEVICE_NAME);    
+    snprintf(mTopicControlDown, SIZE_TOPIC, MQTT_TOPIC_CONTROL_DOWN, SIMPLE_SERVICE_NAME, SIMPLE_DEVICE_NAME);
+
     char* subscribeTopics[] = { mTopicControlDown };
 
 #if(1)
@@ -633,62 +553,46 @@ int start() {
 	char host[] = MQTT_HOST;
 	int port = MQTT_PORT;
 #endif
-    rc = tpSDKCreate(host, port, MQTT_KEEP_ALIVE, SIMPLE_DEVICE_TOKEN, NULL,
-                     1, subscribeTopics, TOPIC_SUBSCRIBE_SIZE, NULL, mClientID);
-    {
-        char str[64];
-        snprintf(str,64,"tpSDKCreate result : %d", rc);
-        SKTDebugPrint(LOG_LEVEL_INFO, str);
-    }
-    return rc;
+    rc = tpSDKCreate(host, port, MQTT_KEEP_ALIVE, SIMPLE_DEVICE_TOKEN, NULL, 
+        1, subscribeTopics, TOPIC_SUBSCRIBE_SIZE, NULL, mClientID);
+    SKTDebugPrint(LOG_LEVEL_INFO, "tpSDKCreate result : %d", rc);
 }
 
 int MARun() {
     SKTDebugInit(1, LOG_LEVEL_INFO);
-    SKTDebugPrint(LOG_LEVEL_INFO, "ThingPlug_Simple_SDK");
-    {
-        char str[256];
-        snprintf(str,256,"AT+SKTPCON=1,MQTTS,%s,%d,%d,simple_v1,%s,%s,%s", 
-                MQTT_SECURE_HOST, 
-                MQTT_SECURE_PORT,
-                MQTT_KEEP_ALIVE,
-                SIMPLE_DEVICE_TOKEN,
-                SIMPLE_SERVICE_NAME,
-                SIMPLE_DEVICE_NAME
-                );
-        SKTDebugPrint(LOG_LEVEL_ATCOM, str);
-    }
+	SKTDebugPrint(LOG_LEVEL_INFO, "ThingPlug_Simple_SDK");
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPCON=1,MQTTS,%s,%d,%d,simple_v1,%s,%s,%s", 
+        MQTT_SECURE_HOST, 
+        MQTT_SECURE_PORT,
+        MQTT_KEEP_ALIVE,
+        SIMPLE_DEVICE_TOKEN,
+        SIMPLE_SERVICE_NAME,
+        SIMPLE_DEVICE_NAME
+    );
     start();
-
-    while (mStep < PROCESS_END) {
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
+    int sendTelemetryCount = 0;
+    while (mStep < PROCESS_END && sendTelemetryCount <= 10) {
 		if(tpMQTTIsConnected() && mStep == PROCESS_TELEMETRY) {
             char data[SIZE_PAYLOAD] = "";
             make_telemetry(data);
 #ifdef JSON_FORMAT
-            {
-                char str[128];
-                snprintf(str,128,"AT+SKTPDAT=1,telemetry,0,%s", data);
-                SKTDebugPrint(LOG_LEVEL_INFO, str);
-            }
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPDAT=1,telemetry,0,%s", data);
             send_data(TELEMETRY_TYPE, FORMAT_JSON, data);
 #elif defined(CSV_FORMAT)
-            {
-                char str[128];
-                snprintf(str,128,"AT+SKTPDAT=1,telemetry,1,%s", data);
-                SKTDebugPrint(LOG_LEVEL_INFO, str);
-            }
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPDAT=1,telemetry,1,%s", data);
             send_data(TELEMETRY_TYPE, FORMAT_CSV, data);
 #endif
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPERR=1");
             char* ret = get_error();
-            {
-                char str[128];
-                snprintf(str,128,"result : %s", ret);
-                SKTDebugPrint(LOG_LEVEL_INFO, str);
-            }
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "result : %s", ret);
             free(ret);
+            sendTelemetryCount++;
         }
         tpMQTTYield(1000);
     }
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPCON=0");
     tpSDKDestroy();
+    SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
     return 0;
 }
