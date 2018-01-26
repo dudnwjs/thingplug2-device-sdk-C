@@ -1,6 +1,6 @@
-ThingPlug Simple SDK
+ThingPlug 2.0 Simple SDK
 ===
-SKT ThingPlug Simple SDK ±¸Á¶¿Í API ¹× »ç¿ë¹ı¿¡ ´ëÇÑ ³»¿ëÀÔ´Ï´Ù.
+SKT ThingPlug Simple SDK êµ¬ì¡°ì™€ API ë° ì‚¬ìš©ë²•ì— ëŒ€í•œ ë‚´ìš©ì…ë‹ˆë‹¤.
 
 Architect
 ---
@@ -20,19 +20,19 @@ Description
 ---
 Directory | Description
 ------------ | -------------
-Simple | ThingPlug Simple SDK ·çÆ® Æú´õ
-middleware |	SDK ¸¦ ÀÌ¿ëÇÑ ¹Ìµé¿ş¾î »ùÇÃ Æú´õ
-lib | ¿ÜºÎ ¶óÀÌºê·¯¸®³ª ¼Ò½ºµé Æú´õ
-include | µ¿ÀÛ¿¡ ÇÊ¿äÇÑ header ÆÄÀÏµé Æú´õ
-src | ÀüÃ¼ ¼Ò½º Æú´õ
-simple | ThingPlug Simple API ¼Ò½º Æú´õ
-net | MQTT/TLS °ü·Ã ¼Ò½º Æú´õ
+Simple | ThingPlug Simple SDK ë£¨íŠ¸ í´ë”
+middleware |	SDK ë¥¼ ì´ìš©í•œ ë¯¸ë“¤ì›¨ì–´ ìƒ˜í”Œ í´ë”
+lib | ì™¸ë¶€ ë¼ì´ë¸ŒëŸ¬ë¦¬ë‚˜ ì†ŒìŠ¤ë“¤ í´ë”
+include | ë™ì‘ì— í•„ìš”í•œ header íŒŒì¼ë“¤ í´ë”
+src | ì „ì²´ ì†ŒìŠ¤ í´ë”
+simple | ThingPlug Simple API ì†ŒìŠ¤ í´ë”
+net | MQTT/TLS ê´€ë ¨ ì†ŒìŠ¤ í´ë”
 
 Library
 ---
-MQTT TLS Áö¿øÀ» À§ÇÏ¿© ¶óÀÌºê·¯¸®¸¦ »ç¿ëÇÕ´Ï´Ù.
+MQTT TLS ì§€ì›ì„ ìœ„í•˜ì—¬ ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.
 
-Áö¿ø È¯°æ | TLS Áö¿ø | MQTT ¶óÀÌºê·¯¸® | TLS ¶óÀÌºê·¯¸®
+ì§€ì› í™˜ê²½ | TLS ì§€ì› | MQTT ë¼ì´ë¸ŒëŸ¬ë¦¬ | TLS ë¼ì´ë¸ŒëŸ¬ë¦¬
 ------------ | ------------- | ------------- | -------------
 __ARM/Linux__ | __O__ | paho | OpenSSL(to be installed.)
 __ARDUINO__ | __X__ | paho |
@@ -50,10 +50,11 @@ API Documentation
 
 Middleware
 ---
-SDK¸¦ »ç¿ëÇÑ ¹Ìµé¿ş¾î ¿¹Á¦´Â ´ÙÀ½°ú °°½À´Ï´Ù.
+SDKë¥¼ ì‚¬ìš©í•œ ë¯¸ë“¤ì›¨ì–´ ì˜ˆì œëŠ” ë‹¤ìŒê³¼ ê°™ìŠµë‹ˆë‹¤.
 
-* __ThingPlug_Simple_SDK.c__ or __ThingPlug_Simple_SDK.ino__ : ThingPlug Simple SDK ¿¡¼­ Áö¿øÇÏ´Â API¸¦ ¸ğµÎ Å×½ºÆ®ÇØº¼ ¼ö ÀÖ½À´Ï´Ù.
-	+ __MA__ (¹Ìµé¿ş¾îÀÇ ManagementAgent ¿ªÇÒ)
-	+ __SRA__ (¹Ìµé¿ş¾îÀÇ SensorManagementAgent ¿ªÇÒ)
-	+ __SMA__ (¹Ìµé¿ş¾îÀÇ ServiceReadyAgent ¿ªÇÒ)
+* __ThingPlug_Simple_SDK.c__ or __ThingPlug_Simple_SDK.ino__ : ThingPlug Simple SDK ì—ì„œ ì§€ì›í•˜ëŠ” APIë¥¼ ëª¨ë‘ í…ŒìŠ¤íŠ¸í•´ë³¼ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+	+ __MA__ (ë¯¸ë“¤ì›¨ì–´ì˜ ManagementAgent ì—­í• )
+	+ __SRA__ (ë¯¸ë“¤ì›¨ì–´ì˜ SensorManagementAgent ì—­í• )
+	+ __SMA__ (ë¯¸ë“¤ì›¨ì–´ì˜ ServiceReadyAgent ì—­í• )
 
+Copyright (c) 2018 SK Telecom Co., Ltd. All Rights Reserved. Distributed under Apache License Version 2.0.
