@@ -67,14 +67,10 @@ typedef enum data_format {
      char* jsonrpc;
      /** request ID from server(int) **/
      int id;
-     /** control result(string) **/
-     char* result;
-     /** fail flag - if 0 SUCCESS(unsigned char) **/
-     unsigned char fail;
+     /** control result(flag) **/
+     int result;
      /** result body(ArrayElement) **/
      ArrayElement* resultArray;
-     /** result body(string) **/
-     char* resultBody;
  } RPCResponse;
  
  typedef struct
