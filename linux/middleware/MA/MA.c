@@ -278,13 +278,14 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             int error = tpSimpleRawResult(rawData);
             set_error(error);
         } else {
-            char* rawData = make_response(&rsp, NULL);
+            if( !AT_logSkip ) {
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, "{\"status\":\"SUCCESS\"}");
+            }
+            char at_res[32] = "";
+            snprintf(at_res, 32, "{%s}",  "\"status\" : \"SUCCESS\"");
+            char* rawData = make_response(&rsp, at_res);
             int error = tpSimpleRawResult(rawData);
             set_error(error);
-                    
-            if( !AT_logSkip ) {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, "{\"status:\":\"SUCCESS\"}");
-            }
         }
         SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
         SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
