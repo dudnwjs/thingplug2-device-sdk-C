@@ -168,3 +168,4 @@ topic : v1/dev/myservice/mydevice/telemetry
 [2018-01-29 07:01:30] [src/net/MQTTClient.c] [341] [INFO]: MQTTAsyncDestroy()
 [2018-01-29 07:01:30] [src/net/MQTTClient.c] [323] [INFO]: MQTTAsyncDisconnect()
 [2018-01-29 07:01:31] [MA/MA.c] [662] [ATCOM]: OK
+
