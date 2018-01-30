@@ -157,7 +157,6 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
     // if RPC control
 
     if(rpcReqObject) {
-        char AT_logSkip = 0;
         int control, rc = -1;
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
         cJSON* rpcObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "jsonrpc");
@@ -230,7 +229,6 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
             // ATCOM INITIATED
             // DO FIRMWARE UPGRADE here...
-            AT_logSkip = 1;
         } else if(strncmp(method, RPC_CLOCK_SYNC, strlen(RPC_CLOCK_SYNC)) == 0) {
             // TODO CLOCK SYNC
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_CLOCK_SYNC");
@@ -255,7 +253,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             if(rc == 0) {            
                 char at_res[32] = "";
                 snprintf(at_res, 32, "{\"%s\":%d}", controlObject->string ,control);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, at_res);
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,0,%s", method, id, at_res);
                 char* rawData = make_response(&rsp, at_res);
                 int error = tpSimpleRawResult(rawData);
                 set_error(error);
@@ -264,7 +262,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             else {
                 char at_res[32] = "";
                 snprintf(at_res, 32, "{%s}",  "\"message\" : \"wrong parameters\"");
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,1,%s", id, at_res);
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,1,%s", method, id, at_res);
                 rsp.result = 0;
                 char* rawData = make_response(&rsp, at_res);
                 int error = tpSimpleRawResult(rawData);
@@ -278,11 +276,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             int error = tpSimpleRawResult(rawData);
             set_error(error);
         } else {
-            if( !AT_logSkip ) {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, "{\"status\":\"SUCCESS\"}");
-            }
             char at_res[32] = "";
             snprintf(at_res, 32, "{%s}",  "\"status\" : \"SUCCESS\"");
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,0,%s", method,id, at_res);
             char* rawData = make_response(&rsp, at_res);
             int error = tpSimpleRawResult(rawData);
             set_error(error);
