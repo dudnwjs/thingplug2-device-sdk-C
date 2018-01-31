@@ -1,44 +1,44 @@
-[2018-01-29 06:59:30] [MA/MA.c] [621] [INFO]: ThingPlug_Simple_SDK
-[2018-01-29 06:59:30] [MA/MA.c] [629] [ATCOM]: AT+SKTPCON=1,MQTTS,ssl://xxx.xxx.xxx.xxx,8883,120,simple_v1,device_token,myservice,mydevice
-[2018-01-29 06:59:30] [src/net/MQTTClient.c] [341] [INFO]: MQTTAsyncDestroy()
-[2018-01-29 06:59:30] [MA/MA.c] [593] [INFO]: tpMQTTSetCallbacks result : 0
-[2018-01-29 06:59:30] [src/simple/Simple.c] [282] [INFO]: tpSimpleInitialize
+[2018-01-30 05:39:32] [MA/MA.c] [617] [INFO]: ThingPlug_Simple_SDK
+[2018-01-30 05:39:32] [MA/MA.c] [625] [ATCOM]: AT+SKTPCON=1,MQTTS,ssl://xxx.xxx.xxx.xxx,8883,120,simple_v1,devicetoken,myservice,mydevice
+[2018-01-30 05:39:32] [src/net/MQTTClient.c] [341] [INFO]: MQTTAsyncDestroy()
+[2018-01-30 05:39:32] [MA/MA.c] [589] [INFO]: tpMQTTSetCallbacks result : 0
+[2018-01-30 05:39:32] [src/simple/Simple.c] [282] [INFO]: tpSimpleInitialize
 serviceID : myservice, deviceID: mydevice
-[2018-01-29 06:59:30] [MA/MA.c] [596] [INFO]: tpSimpleInitialize : 0
-[2018-01-29 06:59:30] [MA/MA.c] [601] [INFO]: client id : mydevice_84EB18E1E955
-[2018-01-29 06:59:30] [src/net/MQTTClient.c] [162] [INFO]: MQTTAsyncCreate()
-[2018-01-29 06:59:30] [MA/MA.c] [616] [INFO]: tpSDKCreate result : 0
-[2018-01-29 06:59:30] [MA/MA.c] [631] [ATCOM]: OK
-[2018-01-29 06:59:30] [MA/MA.c] [82] [INFO]: MQTTConnected result : 0
-[2018-01-29 06:59:30] [MA/MA.c] [89] [INFO]: CONNECTION_STATUS : 2
-[2018-01-29 06:59:30] [MA/MA.c] [91] [ATCOM]: +SKTPCON=0
-[2018-01-29 06:59:30] [src/net/MQTTClient.c] [54] [INFO]: subscribed topic : v1/dev/myservice/mydevice/down
-[2018-01-29 06:59:30] [src/net/MQTTClient.c] [66] [INFO]: on connected : connect onSuccess called
-[2018-01-29 06:59:30] [MA/MA.c] [95] [INFO]: MQTTSubscribed result : 0
-[2018-01-29 06:59:30] [MA/MA.c] [101] [ATCOM]: AT+SKTPDAT=1,attribute,0,{"sysAvailableMemory":127647744,"sysFirmwareVersion":"2.0.0","sysHardwareVersion":"1.0","sysSerialNumber":"710DJC5I10000290","sysErrorCode":0,"sysNetworkType":"ethernet","sysDeviceIpAddress":"192.168.0.5","sysThingPlugIpAddress":"xxx.xxx.xxx.xxx","sysLocationLatitude":37.380257,"sysLocationLongitude":127.115479,"act7colorLed":0}
-[2018-01-29 06:59:30] [src/simple/Simple.c] [351] [INFO]: tpSimpleRawAttribute
+[2018-01-30 05:39:32] [MA/MA.c] [592] [INFO]: tpSimpleInitialize : 0
+[2018-01-30 05:39:32] [MA/MA.c] [597] [INFO]: client id : mydevice_84EB18E1E955
+[2018-01-30 05:39:32] [src/net/MQTTClient.c] [162] [INFO]: MQTTAsyncCreate()
+[2018-01-30 05:39:32] [MA/MA.c] [612] [INFO]: tpSDKCreate result : 0
+[2018-01-30 05:39:32] [MA/MA.c] [627] [ATCOM]: OK
+[2018-01-30 05:39:33] [MA/MA.c] [82] [INFO]: MQTTConnected result : 0
+[2018-01-30 05:39:33] [MA/MA.c] [89] [INFO]: CONNECTION_STATUS : 2
+[2018-01-30 05:39:33] [MA/MA.c] [91] [ATCOM]: +SKTPCON=0
+[2018-01-30 05:39:33] [src/net/MQTTClient.c] [54] [INFO]: subscribed topic : v1/dev/myservice/mydevice/down
+[2018-01-30 05:39:33] [src/net/MQTTClient.c] [66] [INFO]: on connected : connect onSuccess called
+[2018-01-30 05:39:33] [MA/MA.c] [95] [INFO]: MQTTSubscribed result : 0
+[2018-01-30 05:39:33] [MA/MA.c] [101] [ATCOM]: AT+SKTPDAT=1,attribute,0,{"sysAvailableMemory":127004672,"sysFirmwareVersion":"2.0.0","sysHardwareVersion":"1.0","sysSerialNumber":"710DJC5I10000290","sysErrorCode":0,"sysNetworkType":"ethernet","sysDeviceIpAddress":"192.168.0.5","sysThingPlugIpAddress":"xxx.xxx.xxx.xxx","sysLocationLatitude":37.380257,"sysLocationLongitude":127.115479,"act7colorLed":0}
+[2018-01-30 05:39:33] [src/simple/Simple.c] [351] [INFO]: tpSimpleRawAttribute
 topic : v1/dev/myservice/mydevice/attribute
-{"sysAvailableMemory":127647744,"sysFirmwareVersion":"2.0.0","sysHardwareVersion":"1.0","sysSerialNumber":"710DJC5I10000290","sysErrorCode":0,"sysNetworkType":"ethernet","sysDeviceIpAddress":"192.168.0.5","sysThingPlugIpAddress":"xxx.xxx.xxx.xxx","sysLocationLatitude":37.380257,"sysLocationLongitude":127.115479,"act7colorLed":0}
-[2018-01-29 06:59:30] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 06:59:35] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
-[2018-01-29 06:59:35] [MA/MA.c] [140] [INFO]: payload : {"deviceId":"123-456-789","cmdId":546491861,"cmd":"setAttribute","attribute":{"act7colorLed":3}}
-[2018-01-29 06:59:35] [MA/MA.c] [305] [ATCOM]: +SKTPCMD=set_attr,546491861,3,{"act7colorLed":3}
-[2018-01-29 06:59:35] [MA/MA.c] [311] [INFO]: act7colorLed : 3, 546491861
-[2018-01-29 06:59:35] [src/simple/Simple.c] [164] [INFO]: tpSimpleAttribute
+{"sysAvailableMemory":127004672,"sysFirmwareVersion":"2.0.0","sysHardwareVersion":"1.0","sysSerialNumber":"710DJC5I10000290","sysErrorCode":0,"sysNetworkType":"ethernet","sysDeviceIpAddress":"192.168.0.5","sysThingPlugIpAddress":"xxx.xxx.xxx.xxx","sysLocationLatitude":37.380257,"sysLocationLongitude":127.115479,"act7colorLed":0}
+[2018-01-30 05:39:33] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:39:38] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
+[2018-01-30 05:39:38] [MA/MA.c] [140] [INFO]: payload : {"deviceId":"123-456-789","cmdId":1446183703,"cmd":"setAttribute","attribute":{"act7colorLed":2}}
+[2018-01-30 05:39:38] [MA/MA.c] [301] [ATCOM]: +SKTPCMD=set_attr,1446183703,3,{"act7colorLed":2}
+[2018-01-30 05:39:38] [MA/MA.c] [307] [INFO]: act7colorLed : 2, 1446183703
+[2018-01-30 05:39:38] [src/simple/Simple.c] [164] [INFO]: tpSimpleAttribute
 topic : v1/dev/myservice/mydevice/attribute
 {
-	"act7colorLed":	3
+	"act7colorLed":	2
 }
-[2018-01-29 06:59:37] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
-[2018-01-29 06:59:37] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":9,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"act7colorLed":3}],"id":1486286531}}
-[2018-01-29 06:59:37] [MA/MA.c] [180] [ATCOM]: +SKTPCMD=tp_user,1486286531,1,[{"act7colorLed":3}]
-[2018-01-29 06:59:37] [MA/MA.c] [245] [INFO]: tp_user
-[2018-01-29 06:59:37] [MA/MA.c] [252] [INFO]: 
+[2018-01-30 05:39:42] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
+[2018-01-30 05:39:42] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":7,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"act7colorLed":3}],"id":1737704267}}
+[2018-01-30 05:39:42] [MA/MA.c] [179] [ATCOM]: +SKTPCMD=tp_user,1737704267,1,[{"act7colorLed":3}]
+[2018-01-30 05:39:42] [MA/MA.c] [243] [INFO]: tp_user
+[2018-01-30 05:39:42] [MA/MA.c] [250] [INFO]: 
 rpc : 2.0,
-id : 1486286531,
+id : 1737704267,
 control: 3
-[2018-01-29 06:59:37] [MA/MA.c] [258] [ATCOM]: AT+SKTPRES=1,1486286531,0,{"act7colorLed":3}
-[2018-01-29 06:59:37] [src/simple/Simple.c] [371] [INFO]: tpSimpleRawResult
+[2018-01-30 05:39:42] [MA/MA.c] [256] [ATCOM]: AT+SKTPRES=1,tp_user,1737704267,0,{"act7colorLed":3}
+[2018-01-30 05:39:42] [src/simple/Simple.c] [371] [INFO]: tpSimpleRawResult
 topic : v1/dev/myservice/mydevice/up
 {
 	"cmd":	"jsonRpc",
@@ -46,16 +46,23 @@ topic : v1/dev/myservice/mydevice/up
 	"result":	"success",
 	"rpcRsp":	{
 		"jsonrpc":	"2.0",
-		"id":	1486286531,
+		"id":	1737704267,
 		"result":	{"act7colorLed":3}
 	}
 }
-[2018-01-29 06:59:37] [MA/MA.c] [290] [ATCOM]: +SKTPCMD=tp_user,1486286531,3
-[2018-01-29 06:59:37] [MA/MA.c] [291] [ATCOM]: OK
-[2018-01-29 06:59:40] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
-[2018-01-29 06:59:40] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":[["AT+CPSMS=1,,,01000001,00100011"]],"id":1486286532}}
-[2018-01-29 06:59:40] [MA/MA.c] [180] [ATCOM]: +SKTPCMD=tp_remote,1486286532,1,[["AT+CPSMS=1,,,01000001,00100011"]]
-[2018-01-29 06:59:40] [src/simple/Simple.c] [371] [INFO]: tpSimpleRawResult
+[2018-01-30 05:39:42] [MA/MA.c] [286] [ATCOM]: +SKTPCMD=tp_user,1737704267,3
+[2018-01-30 05:39:42] [MA/MA.c] [287] [ATCOM]: OK
+[2018-01-30 05:39:42] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290782,"temp1":24.28,"humi1":48,"light1":228}
+[2018-01-30 05:39:42] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+topic : v1/dev/myservice/mydevice/telemetry
+{"ts":1517290782,"temp1":24.28,"humi1":48,"light1":228}
+[2018-01-30 05:39:42] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:39:42] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:39:42] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:39:49] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
+[2018-01-30 05:39:49] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":[["AT+CPSMS=1,,,01000001,00100011"]],"id":1737704268}}
+[2018-01-30 05:39:49] [MA/MA.c] [179] [ATCOM]: +SKTPCMD=tp_remote,1737704268,1,[["AT+CPSMS=1,,,01000001,00100011"]]
+[2018-01-30 05:39:49] [src/simple/Simple.c] [371] [INFO]: tpSimpleRawResult
 topic : v1/dev/myservice/mydevice/up
 {
 	"cmd":	"jsonRpc",
@@ -63,45 +70,46 @@ topic : v1/dev/myservice/mydevice/up
 	"result":	"success",
 	"rpcRsp":	{
 		"jsonrpc":	"2.0",
-		"id":	1486286532,
+		"id":	1737704268,
 		"result":	{"status" : "SUCCESS"}
 	}
 }
-[2018-01-29 06:59:40] [MA/MA.c] [290] [ATCOM]: +SKTPCMD=tp_remote,1486286532,3
-[2018-01-29 06:59:40] [MA/MA.c] [291] [ATCOM]: OK
-[2018-01-29 06:59:40] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209180,"temp1":20.06,"humi1":46,"light1":206}
-[2018-01-29 06:59:40] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+[2018-01-30 05:39:49] [MA/MA.c] [286] [ATCOM]: +SKTPCMD=tp_remote,1737704268,3
+[2018-01-30 05:39:49] [MA/MA.c] [287] [ATCOM]: OK
+[2018-01-30 05:39:52] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290792,"temp1":30.40,"humi1":40,"light1":240}
+[2018-01-30 05:39:52] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209180,"temp1":20.06,"humi1":46,"light1":206}
-[2018-01-29 06:59:40] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 06:59:40] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 06:59:40] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 06:59:50] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209190,"temp1":24.24,"humi1":44,"light1":224}
-[2018-01-29 06:59:50] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290792,"temp1":30.40,"humi1":40,"light1":240}
+[2018-01-30 05:39:52] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:39:52] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:39:52] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:40:02] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290802,"temp1":44.71,"humi1":41,"light1":221}
+[2018-01-30 05:40:02] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209190,"temp1":24.24,"humi1":44,"light1":224}
-[2018-01-29 06:59:50] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 06:59:50] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 06:59:50] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:00:00] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209200,"temp1":57.39,"humi1":49,"light1":239}
-[2018-01-29 07:00:00] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290802,"temp1":44.71,"humi1":41,"light1":221}
+[2018-01-30 05:40:02] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:40:02] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:40:02] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:40:12] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290812,"temp1":54.23,"humi1":43,"light1":223}
+[2018-01-30 05:40:12] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209200,"temp1":57.39,"humi1":49,"light1":239}
-[2018-01-29 07:00:00] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:00:00] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:00:00] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:00:10] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209210,"temp1":56.32,"humi1":42,"light1":232}
-[2018-01-29 07:00:10] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290812,"temp1":54.23,"humi1":43,"light1":223}
+[2018-01-30 05:40:12] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:40:12] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:40:12] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:40:22] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290822,"temp1":27.92,"humi1":42,"light1":242}
+[2018-01-30 05:40:22] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209210,"temp1":56.32,"humi1":42,"light1":232}
-[2018-01-29 07:00:10] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:00:10] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:00:10] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:00:19] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
-[2018-01-29 07:00:19] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://xxx.xxx.xxx.xxx:80/portal/services/myservice/firmwares/6/43a79823-53b1-4405-958b-6da264814c7e/download","http://xxx.xxx.xxx.xxx:80/portal/firmware-upgrade-devices/32/43a79823-53b1-4405-958b-6da264814c7e"],"id":1486286533}}
-[2018-01-29 07:00:19] [MA/MA.c] [180] [ATCOM]: +SKTPCMD=tp_fwupgrade,1486286533,1,["http://xxx.xxx.xxx.xxx:80/portal/services/myservice/firmwares/6/43a79823-53b1-4405-958b-6da264814c7e/download","http://xxx.xxx.xxx.xxx:80/portal/firmware-upgrade-devices/32/43a79823-53b1-4405-958b-6da264814c7e"]
-[2018-01-29 07:00:19] [MA/MA.c] [230] [INFO]: RPC_FIRMWARE_UPGRADE
-[2018-01-29 07:00:19] [src/simple/Simple.c] [371] [INFO]: tpSimpleRawResult
+{"ts":1517290822,"temp1":27.92,"humi1":42,"light1":242}
+[2018-01-30 05:40:22] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:40:22] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:40:22] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:40:23] [MA/MA.c] [133] [INFO]: MQTTMessageArrived topic : v1/dev/myservice/mydevice/down, step : 2
+[2018-01-30 05:40:23] [MA/MA.c] [140] [INFO]: payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://xxx.xxx.xxx.xxx:80/portal/services/myservice/firmwares/6/43a79823-53b1-4405-958b-6da264814c7e/download","http://xxx.xxx.xxx.xxx:80/portal/firmware-upgrade-devices/35/43a79823-53b1-4405-958b-6da264814c7e"],"id":1737704269}}
+[2018-01-30 05:40:23] [MA/MA.c] [179] [ATCOM]: +SKTPCMD=tp_fwupgrade,1737704269,1,["http://xxx.xxx.xxx.xxx:80/portal/services/myservice/firmwares/6/43a79823-53b1-4405-958b-6da264814c7e/download","http://xxx.xxx.xxx.xxx:80/portal/firmware-upgrade-devices/35/43a79823-53b1-4405-958b-6da264814c7e"]
+[2018-01-30 05:40:23] [MA/MA.c] [229] [INFO]: RPC_FIRMWARE_UPGRADE
+[2018-01-30 05:40:23] [MA/MA.c] [281] [ATCOM]: AT+SKTPRES=1,tp_fwupgrade,1737704269,0,{"status" : "SUCCESS"}
+[2018-01-30 05:40:23] [src/simple/Simple.c] [371] [INFO]: tpSimpleRawResult
 topic : v1/dev/myservice/mydevice/up
 {
 	"cmd":	"jsonRpc",
@@ -109,63 +117,57 @@ topic : v1/dev/myservice/mydevice/up
 	"result":	"success",
 	"rpcRsp":	{
 		"jsonrpc":	"2.0",
-		"id":	1486286533,
+		"id":	1737704269,
 		"result":	{"status" : "SUCCESS"}
 	}
 }
-[2018-01-29 07:00:19] [MA/MA.c] [290] [ATCOM]: +SKTPCMD=tp_fwupgrade,1486286533,3
-[2018-01-29 07:00:19] [MA/MA.c] [291] [ATCOM]: OK
-[2018-01-29 07:00:20] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209220,"temp1":49.30,"humi1":40,"light1":230}
-[2018-01-29 07:00:20] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+[2018-01-30 05:40:23] [MA/MA.c] [286] [ATCOM]: +SKTPCMD=tp_fwupgrade,1737704269,3
+[2018-01-30 05:40:23] [MA/MA.c] [287] [ATCOM]: OK
+[2018-01-30 05:40:32] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290832,"temp1":53.92,"humi1":42,"light1":242}
+[2018-01-30 05:40:32] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209220,"temp1":49.30,"humi1":40,"light1":230}
-[2018-01-29 07:00:20] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:00:20] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:00:20] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:00:30] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209230,"temp1":21.15,"humi1":45,"light1":215}
-[2018-01-29 07:00:30] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290832,"temp1":53.92,"humi1":42,"light1":242}
+[2018-01-30 05:40:32] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:40:32] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:40:32] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:40:42] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290842,"temp1":45.52,"humi1":42,"light1":202}
+[2018-01-30 05:40:42] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209230,"temp1":21.15,"humi1":45,"light1":215}
-[2018-01-29 07:00:30] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:00:30] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:00:30] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:00:40] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209240,"temp1":40.99,"humi1":49,"light1":249}
-[2018-01-29 07:00:40] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290842,"temp1":45.52,"humi1":42,"light1":202}
+[2018-01-30 05:40:42] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:40:42] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:40:42] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:40:52] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290852,"temp1":42.27,"humi1":47,"light1":227}
+[2018-01-30 05:40:52] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209240,"temp1":40.99,"humi1":49,"light1":249}
-[2018-01-29 07:00:40] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:00:40] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:00:40] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:00:50] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209250,"temp1":60.05,"humi1":45,"light1":205}
-[2018-01-29 07:00:50] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290852,"temp1":42.27,"humi1":47,"light1":227}
+[2018-01-30 05:40:52] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:40:52] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:40:52] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:41:02] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290862,"temp1":38.72,"humi1":42,"light1":222}
+[2018-01-30 05:41:02] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209250,"temp1":60.05,"humi1":45,"light1":205}
-[2018-01-29 07:00:50] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:00:50] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:00:50] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:01:00] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209260,"temp1":22.37,"humi1":47,"light1":237}
-[2018-01-29 07:01:00] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290862,"temp1":38.72,"humi1":42,"light1":222}
+[2018-01-30 05:41:02] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:41:02] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:41:02] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:41:12] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290872,"temp1":28.74,"humi1":44,"light1":224}
+[2018-01-30 05:41:12] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209260,"temp1":22.37,"humi1":47,"light1":237}
-[2018-01-29 07:01:00] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:01:00] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:01:00] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:01:10] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209270,"temp1":63.23,"humi1":43,"light1":223}
-[2018-01-29 07:01:10] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
+{"ts":1517290872,"temp1":28.74,"humi1":44,"light1":224}
+[2018-01-30 05:41:12] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:41:12] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:41:12] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:41:22] [MA/MA.c] [634] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517290882,"temp1":57.20,"humi1":40,"light1":220}
+[2018-01-30 05:41:22] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
 topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209270,"temp1":63.23,"humi1":43,"light1":223}
-[2018-01-29 07:01:10] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:01:10] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:01:10] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:01:20] [MA/MA.c] [638] [ATCOM]: AT+SKTPDAT=1,telemetry,0,{"ts":1517209280,"temp1":59.13,"humi1":43,"light1":213}
-[2018-01-29 07:01:20] [src/simple/Simple.c] [316] [INFO]: tpSimpleRawTelemetry
-topic : v1/dev/myservice/mydevice/telemetry
-{"ts":1517209280,"temp1":59.13,"humi1":43,"light1":213}
-[2018-01-29 07:01:20] [MA/MA.c] [427] [ATCOM]: OK
-[2018-01-29 07:01:20] [MA/MA.c] [644] [ATCOM]: AT+SKTPERR=1
-[2018-01-29 07:01:20] [MA/MA.c] [646] [ATCOM]: result : +SKTPE:0
-[2018-01-29 07:01:30] [MA/MA.c] [660] [ATCOM]: AT+SKTPCON=0
-[2018-01-29 07:01:30] [src/net/MQTTClient.c] [341] [INFO]: MQTTAsyncDestroy()
-[2018-01-29 07:01:30] [src/net/MQTTClient.c] [323] [INFO]: MQTTAsyncDisconnect()
-[2018-01-29 07:01:31] [MA/MA.c] [662] [ATCOM]: OK
-
+{"ts":1517290882,"temp1":57.20,"humi1":40,"light1":220}
+[2018-01-30 05:41:22] [MA/MA.c] [423] [ATCOM]: OK
+[2018-01-30 05:41:22] [MA/MA.c] [640] [ATCOM]: AT+SKTPERR=1
+[2018-01-30 05:41:22] [MA/MA.c] [642] [ATCOM]: result : +SKTPE:0
+[2018-01-30 05:41:32] [MA/MA.c] [656] [ATCOM]: AT+SKTPCON=0
+[2018-01-30 05:41:32] [src/net/MQTTClient.c] [341] [INFO]: MQTTAsyncDestroy()
+[2018-01-30 05:41:32] [src/net/MQTTClient.c] [323] [INFO]: MQTTAsyncDisconnect()
+[2018-01-30 05:41:32] [MA/MA.c] [112] [INFO]: MQTTDisconnected result : 0
+[2018-01-30 05:41:32] [MA/MA.c] [115] [ATCOM]: +SKTPCON=-1
+[2018-01-30 05:41:33] [MA/MA.c] [658] [ATCOM]: OK
