@@ -261,6 +261,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // control fail
             else {
                 char at_res[32] = "";
+
                 snprintf(at_res, 32, "{%s}",  "\"code\" : 111, \"message\" : \"wrong parameters\"");
                 SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,1,%s", method, id, at_res);
                 rsp.result = 0;
