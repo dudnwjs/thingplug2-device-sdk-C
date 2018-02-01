@@ -67,7 +67,7 @@ static int mErrorCode = 0;
 
 static void make_attribute(char *data);
 static void make_telemetry(char *data);
-static char* make_response(RPCResponse *rsp);
+static char* make_response(RPCResponse *rsp, char* resultBody);
 static void send_data(THINGPLUG_DATA_TYPE tpDataType, DATA_FORMAT format, char *data);
 static char* get_error();
 static void set_error(int errorCode);
@@ -149,25 +149,41 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
         free(ret);
     } 
     // if RPC control
-    else if(rpcReqObject) {
-        int control, rc = 0;
+
+    if(rpcReqObject) {
+        int control, rc = -1;
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
-        cJSON* modeObject = cJSON_GetObjectItemCaseSensitive(root, "rpcMode");
         cJSON* rpcObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "jsonrpc");
         cJSON* idObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "id");
         cJSON* paramsObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "params");
         cJSON* methodObject = cJSON_GetObjectItemCaseSensitive(rpcReqObject, "method");        
         cJSON* controlObject;
-        if(!cmdObject || !modeObject || !idObject || !methodObject) return;        
+        if(!cmdObject || !idObject || !methodObject) return;        
         char* cmd = cmdObject->valuestring;
-        char* mode = modeObject->valuestring;
         char* rpc = rpcObject->valuestring;
         int id = idObject->valueint;
         char* method = methodObject->valuestring;
-        if(!cmd || !mode || !method) return;
-        unsigned char isTwoWay = 0;
-        if(strncmp(mode, "twoway", strlen("twoway")) == 0) isTwoWay = 1;
-        char* params = cJSON_PrintUnformatted(paramsObject);
+
+        if(!cmd || !method) return;
+
+        char* params = NULL;
+        if( paramsObject ) {
+            params = cJSON_PrintUnformatted(paramsObject);
+            if(params) {
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
+                free(params);
+            }
+        } else {
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,", method, id);
+        }
+
+        RPCResponse rsp;
+        memset(&rsp, 0, sizeof(RPCResponse));
+        rsp.result = 1;
+        rsp.cmd = cmd;
+        rsp.cmdId = 1;
+        rsp.jsonrpc = rpc;
+        rsp.id = id;
 
         // Reserved Procedure for ThingPlug
         if(strncmp(method, RPC_RESET, strlen(RPC_RESET)) == 0) {
@@ -206,10 +222,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO FIRMWARE UPGRADE
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_FIRMWARE_UPGRADE");
             // ATCOM INITIATED
-            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
-            
             // DO FIRMWARE UPGRADE here...
-
         } else if(strncmp(method, RPC_CLOCK_SYNC, strlen(RPC_CLOCK_SYNC)) == 0) {
             // TODO CLOCK SYNC
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_CLOCK_SYNC");
@@ -218,69 +231,54 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO SIGNAL STASTUS REPORT
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SIGNAL_STATUS_REPORT");
 
-        } else if(strncmp(method, RPC_REMOTE, strlen(RPC_REMOTE)) == 0) {
-            // TODO REPORT
-            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_REMOTE");
+        } 
+        
+        if(strncmp(method, RPC_USER, strlen(RPC_USER)) == 0) {
+            SKTDebugPrint(LOG_LEVEL_INFO, method);
             // ATCOM INITIATED
-            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
-
-            // DO REMOTE here...
-
-        } else if(strncmp(method, RPC_USER, strlen(RPC_USER)) == 0) {
-            // USER
-            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_USER");
-            // ATCOM INITIATED
-            if(isTwoWay) {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,1,%s", method, id, params);
-            } else {
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3,%s", method, id, params);
-            }
             if(!paramsObject) return;
             cJSON* paramObject = cJSON_GetArrayItem(paramsObject, 0);
             controlObject = cJSON_GetObjectItemCaseSensitive(paramObject, "act7colorLed");
             if(!controlObject) return;
             control = controlObject->valueint;
-            SKTDebugPrint(LOG_LEVEL_INFO, "\nrpc : %s,\nid : %d,\ncmd : %d", rpc, id, control);
+            SKTDebugPrint(LOG_LEVEL_INFO, "\nrpc : %s,\nid : %d,\ncontrol: %d", rpc, id, control);
             rc = RGB_LEDControl(control);
-        } else {
-            if(params) free(params);
-            SKTDebugPrint(LOG_LEVEL_ERROR, "not supported method : %s", method);
-            return;
-        }
-        if(params) free(params);
-        if(isTwoWay) {
-            char *rpcRsp;
-            char body[128] = "";
-            RPCResponse rsp;
-            memset(&rsp, 0, sizeof(RPCResponse));
-            rsp.cmd = cmd;
-            rsp.cmdId = 1;
-            rsp.jsonrpc = rpc;
-            rsp.id = id;
-            rsp.fail = rc;
             // control success
-            if(rc == 0) {
-                snprintf(body, sizeof(body), "{\"%s\":\"%s\"}", "message", "success");
-                rsp.resultBody = body;
-                rsp.result = "success";
-                rpcRsp = make_response(&rsp);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,0,%s", id, body);
+            if(rc == 0) {            
+                char at_res[32] = "";
+                snprintf(at_res, 32, "{\"%s\":%d}", controlObject->string ,control);
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,0,%s", method, id, at_res);
+                char* rawData = make_response(&rsp, at_res);
+                int error = tpSimpleRawResult(rawData);
+                set_error(error);
             }
             // control fail
             else {
-                snprintf(body, sizeof(body), "{\"%s\":\"%s\"}", "message", "wrong parameters");
-                rsp.resultBody = body;
-                rsp.result = "fail";
-                rpcRsp = make_response(&rsp);
-                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%d,1,%s", id, body);
+                char at_res[32] = "";
+                snprintf(at_res, 32, "{%s}",  "\"message\" : \"wrong parameters\"");
+                SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,1,%s", method, id, at_res);
+                rsp.result = 0;
+                char* rawData = make_response(&rsp, at_res);
+                int error = tpSimpleRawResult(rawData);
+                set_error(error);
             }
-            int error = tpSimpleRawResult(rpcRsp);
+
+        } else if(strncmp(method, RPC_REMOTE, strlen(RPC_REMOTE)) == 0 ) {
+            char at_res[32] = "";
+            snprintf(at_res, 32, "{%s}",  "\"status\" : \"SUCCESS\"");
+            char* rawData = make_response(&rsp, at_res);
+            int error = tpSimpleRawResult(rawData);
             set_error(error);
-            free(rpcRsp);
-            SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
-            // ATCOM FINISHED
-            SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
+        } else {
+            char at_res[32] = "";
+            snprintf(at_res, 32, "{%s}",  "\"status\" : \"SUCCESS\"");
+            SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,0,%s", method,id, at_res);
+            char* rawData = make_response(&rsp, at_res);
+            int error = tpSimpleRawResult(rawData);
+            set_error(error);
         }
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "+SKTPCMD=%s,%d,3", method, id);
+        SKTDebugPrint(LOG_LEVEL_ATCOM, "OK");
     } else {
         cJSON* cmdObject = cJSON_GetObjectItemCaseSensitive(root, "cmd");
         cJSON* cmdIdObject = cJSON_GetObjectItemCaseSensitive(root, "cmdId");
@@ -335,7 +333,7 @@ unsigned int current_timestamp() {
     return timer;
 }
 
-static char* make_response(RPCResponse *rsp) {
+static char* make_response(RPCResponse *rsp, char* resultBody) {
     char* jsonData;
     cJSON* jsonObject = cJSON_CreateObject();
     cJSON* rpcRspObject = cJSON_CreateObject();
@@ -343,18 +341,24 @@ static char* make_response(RPCResponse *rsp) {
 
     cJSON_AddStringToObject(jsonObject, CMD, rsp->cmd);
     cJSON_AddNumberToObject(jsonObject, CMD_ID, rsp->cmdId);
-    cJSON_AddStringToObject(jsonObject, RESULT, rsp->result);
+    if( rsp->result ) {
+        cJSON_AddStringToObject(jsonObject, RESULT, "success");
+    } else {
+        cJSON_AddStringToObject(jsonObject, RESULT, "fail");
+    }
 
     cJSON_AddStringToObject(rpcRspObject, JSONRPC, rsp->jsonrpc);
     cJSON_AddNumberToObject(rpcRspObject, ID, rsp->id);
-    resultObject = cJSON_CreateRaw(rsp->resultBody);
-    if(rsp->fail) {
-        cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
-    } else {
-        cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
+    if(resultBody != NULL) {
+        resultObject = cJSON_CreateRaw(resultBody);
+        if(rsp->result) {
+            cJSON_AddItemToObject(rpcRspObject, RESULT, resultObject);
+        } else {
+            cJSON_AddItemToObject(rpcRspObject, ERROR, resultObject);
+        }
     }
     cJSON_AddItemToObject(jsonObject, RPC_RSP, rpcRspObject);
-    jsonData = cJSON_PrintUnformatted(jsonObject);
+    jsonData = cJSON_Print(jsonObject);
     cJSON_Delete(jsonObject);
     return jsonData;
 }
@@ -513,6 +517,7 @@ static void set_error(int errorCode) {
     mErrorCode = errorCode;
 }
 
+
 /**
  * @brief get Device MAC Address without Colon.
  * @return mac address
@@ -520,7 +525,6 @@ static void set_error(int errorCode) {
 char* GetMacAddressWithoutColon() {
     return strdup("A1:B2:C3:D4:E5:F6");
 }
-
 
 void start() {
     tpSDKDestroy();
