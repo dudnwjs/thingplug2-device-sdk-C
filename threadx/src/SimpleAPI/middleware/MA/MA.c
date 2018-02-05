@@ -300,7 +300,7 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             int act7colorLed = act7colorLedObject->valueint;
             SKTDebugPrint(LOG_LEVEL_INFO, "act7colorLed : %d, %d", act7colorLed, cmdId);
             int rc = RGB_LEDControl(act7colorLed);
-            if(rc == 0) {
+            if(rc != 0) {
                 act7colorLed = RGB_LEDStatus();
             }
 #ifdef JSON_FORMAT
