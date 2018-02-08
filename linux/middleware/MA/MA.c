@@ -216,9 +216,9 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             // TODO SOFTWARE REINSTALL
             SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_REINSTALL");
             
-        } else if(strncmp(method, RPC_SOFTWARE_REUNINSTALL, strlen(RPC_SOFTWARE_REUNINSTALL)) == 0) {
-            // TODO SOFTWARE REUNINSTALL
-            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_REUNINSTALL");
+        } else if(strncmp(method, RPC_SOFTWARE_UNINSTALL, strlen(RPC_SOFTWARE_UNINSTALL)) == 0) {
+            // TODO SOFTWARE UNINSTALL
+            SKTDebugPrint(LOG_LEVEL_INFO, "RPC_SOFTWARE_UNINSTALL");
             
         } else if(strncmp(method, RPC_SOFTWARE_UPDATE, strlen(RPC_SOFTWARE_UPDATE)) == 0) {
             // TODO SOFTWARE UPDATE
@@ -260,8 +260,8 @@ void MQTTMessageArrived(char* topic, char* msg, int msgLen) {
             }
             // control fail
             else {
-                char at_res[32] = "";
-                snprintf(at_res, 32, "{%s}",  "\"message\" : \"wrong parameters\"");
+                char at_res[64] = "";
+                snprintf(at_res, 64, "{%s}",  "\"code\" : -14, \"message\" : \"Invalid Parameters\"");
                 SKTDebugPrint(LOG_LEVEL_ATCOM, "AT+SKTPRES=1,%s,%d,1,%s", method, id, at_res);
                 rsp.result = 0;
                 char* rawData = make_response(&rsp, at_res);
